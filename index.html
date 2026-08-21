@@ -9,19 +9,33 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
+  /* =====================================================================
+     이미지/영상 교체 방법
+     1) 유튜브 홍보영상: 아래 CONFIG.youtubeId 에 영상 ID만 입력하면
+        (예: https://www.youtube.com/watch?v=ABCD1234 → 'ABCD1234')
+        썸네일이 자동으로 뜨고, 클릭하면 그 자리에서 재생됩니다.
+     2) 참가작품 / 스토리 이미지: images 폴더에 아래 파일명 그대로
+        이미지를 넣으면 자동으로 교체됩니다. (파일이 없으면 그라데이션
+        플레이스홀더가 대신 보여서 페이지가 깨지지 않습니다)
+          images/work-1.jpg      (참가작품 대표 이미지)
+          images/story-1.jpg ~ story-6.jpg (하단 스토리 카드 6장)
+     ===================================================================== */
   :root{
-    --bg:#0b0a1a;
-    --bg-soft:#141230;
-    --card:#1a1836;
-    --card-border:rgba(255,255,255,0.09);
-    --ink:#f4f2fb;
-    --ink-dim:#b8b3d6;
-    --ink-faint:#7d78a3;
+    --blue-deep:#0038b8;
+    --blue:#1567ff;
+    --blue-mid:#2f8bff;
+    --blue-light:#6fb3ff;
+    --cyan:#35d0ff;
     --magenta:#ff2d9e;
     --violet:#9a3bff;
-    --blue:#3d7bff;
-    --cyan:#3ddcff;
     --grad-brand: linear-gradient(95deg, var(--magenta) 0%, var(--violet) 55%, var(--blue) 100%);
+    --ink:#0b1f4d;
+    --ink-dim:#4a5d8a;
+    --ink-faint:#8091ba;
+    --on-blue:#ffffff;
+    --on-blue-dim:#cfe0ff;
+    --card:#ffffff;
+    --card-border:rgba(11,31,77,0.08);
     --radius-lg:26px;
     --radius-md:18px;
     --radius-sm:12px;
@@ -30,11 +44,8 @@
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(ellipse 600px 400px at 15% -5%, rgba(255,45,158,0.35), transparent 60%),
-      radial-gradient(ellipse 600px 500px at 90% 15%, rgba(61,123,255,0.30), transparent 55%),
-      var(--bg);
-    color:var(--ink);
+    background:var(--blue);
+    color:var(--on-blue);
     font-family:"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
     -webkit-font-smoothing:antialiased;
     min-height:100vh;
@@ -43,17 +54,18 @@
     overflow-x:hidden;
   }
   a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
   .page{
     max-width:var(--maxw);
     margin:0 auto;
     min-height:100vh;
     position:relative;
     overflow:hidden;
-    box-shadow:0 0 80px rgba(0,0,0,0.5);
+    box-shadow:0 0 80px rgba(0,0,0,0.35);
   }
   @media (min-width:520px){
     body{padding:28px 0;}
-    .page{border-radius:32px;border:1px solid rgba(255,255,255,0.08);min-height:auto;}
+    .page{border-radius:32px;min-height:auto;}
   }
 
   /* progress dots */
@@ -70,157 +82,294 @@
   @media (min-width:520px){ .dots{ right: max(14px, calc((100vw - var(--maxw)) / 2 - 30px)); } }
   .dots span{
     width:6px;height:6px;border-radius:50%;
-    background:rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.35);
     transition:all .35s ease;
   }
   .dots span.active{
-    background:var(--ink);
+    background:#fff;
     height:20px;
-    box-shadow:0 0 10px rgba(255,255,255,0.5);
+    box-shadow:0 0 10px rgba(255,255,255,0.6);
   }
 
-  section{
-    position:relative;
-    padding:52px 22px 44px;
-  }
-  .divider{
-    border:none;
-    height:1px;
-    margin:0 22px;
-    background:repeating-linear-gradient(90deg, rgba(255,255,255,0.18) 0 6px, transparent 6px 12px);
-  }
+  section{position:relative;padding:52px 22px 44px;}
 
   .eyebrow{
     display:inline-flex;
     align-items:center;
     gap:6px;
     font-size:11.5px;
-    font-weight:700;
-    letter-spacing:.08em;
-    color:var(--ink-dim);
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--card-border);
-    padding:6px 12px;
+    font-weight:800;
+    letter-spacing:.06em;
+    color:var(--blue-deep);
+    background:#fff;
+    padding:7px 14px;
     border-radius:999px;
-    margin-bottom:16px;
+    margin-bottom:14px;
+    box-shadow:0 6px 16px rgba(0,20,80,0.18);
   }
   .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--grad-brand);}
 
-  /* ---------- HERO ---------- */
-  .hero{padding-top:40px;}
+  /* ---------- HERO (blue, dotted) ---------- */
+  .hero{
+    padding-top:36px;
+    background:
+      radial-gradient(circle at 18% 100%, rgba(255,255,255,0.16), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(255,255,255,0.14), transparent 40%),
+      radial-gradient(circle, rgba(255,255,255,0.35) 1.4px, transparent 1.6px) 0 0/22px 22px,
+      linear-gradient(160deg, var(--blue-deep) 0%, var(--blue) 55%, var(--blue-mid) 100%);
+  }
+  .hero-bg{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    z-index:-1;
+  }
+  .hero-bg img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .hero-bg .tint{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(165deg,
+      rgba(0,56,184,0.62) 0%,
+      rgba(21,103,255,0.5) 45%,
+      rgba(47,139,255,0.42) 75%,
+      rgba(47,139,255,0.6) 100%);
+  }
+  .logo-wrap{
+    display:flex;
+    justify-content:center;
+    margin-bottom:22px;
+  }
   .logo{
     text-align:center;
-    margin-bottom:30px;
+    background:#fff;
+    padding:14px 26px 16px;
+    border-radius:20px;
+    box-shadow:0 10px 26px rgba(0,10,50,0.28);
+  }
+  .logo-img{
+    display:block;
+    max-width:240px;
+    width:100%;
+    height:auto;
+    margin:0 auto;
   }
   .logo .mark{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    width:34px;height:34px;
+    width:30px;height:30px;
     border-radius:50%;
-    background:var(--grad-brand);
+    background:#c22d8f;
     color:#fff;
     font-family:"Nanum Pen Script", cursive;
-    font-size:22px;
-    vertical-align:-6px;
-    margin:0 2px;
+    font-weight:700;
+    font-size:18px;
+    vertical-align:-5px;
+    margin:0 1px;
+    -webkit-text-stroke:0;
   }
-  .logo .line1{
+  .logo .line1, .logo .line2{
     font-family:"Nanum Pen Script", cursive;
-    font-size:34px;
-    line-height:1.15;
-    background:var(--grad-brand);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
+    font-weight:700;
+    color:#1a3faa;
+    -webkit-text-stroke:.4px #1a3faa;
   }
+  .logo .line1{font-size:30px;line-height:1.1;}
   .logo .line2{
-    font-family:"Nanum Pen Script", cursive;
-    font-size:30px;
-    line-height:1.2;
-    background:linear-gradient(95deg, var(--violet), var(--blue));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
+    font-size:26px;
+    line-height:1.25;
+    text-align:right;
+    margin-top:-2px;
   }
+
+  .cloud{
+    position:absolute;
+    font-size:26px;
+    opacity:.55;
+    filter:drop-shadow(0 4px 8px rgba(0,10,50,0.25));
+  }
+  .cloud-a{top:120px;left:14px;}
+  .cloud-b{top:150px;right:18px;font-size:20px;}
+
+  .hero-tagline{
+    text-align:center;
+    font-family:"Nanum Pen Script", cursive;
+    color:#fff;
+    font-size:19px;
+    line-height:1.5;
+    margin:0 0 16px;
+    text-shadow:0 4px 14px rgba(0,10,50,0.3);
+  }
+  .hero-tagline .hl{
+    display:block;
+    font-size:34px;
+    color:#ffe38a;
+    text-shadow:0 4px 16px rgba(0,10,50,0.35);
+  }
+
+  .glass-card{
+    background:rgba(255,255,255,0.14);
+    border:1px solid rgba(255,255,255,0.32);
+    -webkit-backdrop-filter:blur(6px);
+    backdrop-filter:blur(6px);
+    border-radius:var(--radius-md);
+    padding:4px 16px;
+    margin-bottom:22px;
+  }
+  .glass-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:11px 0;
+    font-size:12.5px;
+  }
+  .glass-row + .glass-row{border-top:1px solid rgba(255,255,255,0.22);}
+  .glass-row .label{font-weight:700;color:#fff;}
+  .glass-row .val{font-weight:800;color:#ffe38a;}
+
+  .mascot{display:flex;justify-content:center;margin-bottom:6px;}
 
   .hero h1{
     text-align:center;
     font-size:20px;
     font-weight:900;
     margin:0 0 6px;
+    color:#fff;
   }
   .hero .sub{
     text-align:center;
-    font-size:13px;
-    color:var(--ink-dim);
+    font-size:12.5px;
+    color:var(--on-blue-dim);
     margin:0 0 22px;
     line-height:1.6;
   }
 
+  .video-wrap{position:relative;margin-bottom:10px;}
+  .video-callout{
+    position:absolute;
+    top:-12px;left:16px;
+    z-index:3;
+    background:#fff;
+    color:var(--blue-deep);
+    font-size:11px;
+    font-weight:800;
+    padding:6px 12px;
+    border-radius:999px;
+    box-shadow:0 6px 14px rgba(0,20,80,0.25);
+  }
+  .video-callout::after{
+    content:"";
+    position:absolute;left:22px;bottom:-5px;
+    width:10px;height:10px;
+    background:#fff;
+    transform:rotate(45deg);
+  }
   .video-card{
     position:relative;
     aspect-ratio:16/9;
     border-radius:var(--radius-md);
     overflow:hidden;
+    background:#0a1836;
+    box-shadow:0 16px 34px rgba(0,10,50,0.35);
+    display:block;
+  }
+  .video-card img.thumb{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .video-card iframe{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    border:0;
+  }
+  .video-card .fallback{
+    position:absolute;inset:0;
     background:
       radial-gradient(circle at 30% 20%, rgba(255,45,158,0.55), transparent 55%),
-      radial-gradient(circle at 75% 80%, rgba(61,123,255,0.55), transparent 55%),
-      #211f42;
-    border:1px solid var(--card-border);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
+      radial-gradient(circle at 75% 80%, rgba(61,123,255,0.6), transparent 55%),
+      #14204a;
   }
-  .video-card::before{
-    content:"";
+  .video-card .scrim{
     position:absolute;inset:0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
-    background-size:24px 24px;
-    mask-image:radial-gradient(circle at center, black, transparent 75%);
+    background:linear-gradient(180deg, rgba(0,10,40,0.05), rgba(0,10,40,0.35));
+  }
+  .video-card button.play-hit{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    background:transparent;
+    border:0;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    padding:0;
   }
   .play-btn{
-    position:relative;
-    width:58px;height:58px;
+    width:56px;height:56px;
     border-radius:50%;
-    background:rgba(255,255,255,0.95);
+    background:rgba(255,255,255,0.96);
     display:flex;align-items:center;justify-content:center;
-    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+    box-shadow:0 8px 22px rgba(0,0,0,0.35);
   }
   .play-btn svg{width:20px;height:20px;margin-left:3px;}
   .video-caption{
     text-align:center;
-    font-size:12.5px;
-    color:var(--ink-faint);
+    font-size:12px;
+    color:var(--on-blue-dim);
     margin-top:12px;
+  }
+  .quote-pill{
+    display:block;
+    margin:16px auto 0;
+    max-width:320px;
+    text-align:center;
+    font-size:12.5px;
+    font-weight:700;
+    color:#fff;
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.28);
+    padding:10px 18px;
+    border-radius:999px;
+    line-height:1.5;
   }
 
   /* ---------- EVENT ---------- */
+  #sec-event{
+    background:linear-gradient(180deg, var(--blue-mid) 0%, #eef4ff 90px, #eef4ff 100%);
+  }
   .event-title{
     text-align:center;
-    font-size:24px;
+    font-size:23px;
     font-weight:900;
     margin:0 0 10px;
+    color:#fff;
   }
   .event-headline{
     text-align:center;
-    font-size:15px;
+    font-size:14.5px;
     font-weight:700;
     margin:0 0 8px;
-    color:var(--ink);
+    color:#fff;
   }
   .event-headline .accent{
-    background:var(--grad-brand);
+    display:block;
+    margin-top:2px;
+    background:linear-gradient(95deg, #fff, var(--cyan));
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-size:16px;
   }
   .event-desc{
     text-align:center;
     font-size:12.5px;
     line-height:1.7;
-    color:var(--ink-dim);
+    color:var(--on-blue-dim);
     margin:0 0 26px;
   }
 
@@ -230,10 +379,12 @@
     border-radius:var(--radius-md);
     padding:16px;
     margin-bottom:12px;
+    color:var(--ink);
+    box-shadow:0 10px 24px rgba(0,20,80,0.12);
   }
   .card h3{
-    font-size:13px;
-    font-weight:700;
+    font-size:12.5px;
+    font-weight:800;
     margin:0 0 4px;
     color:var(--ink-dim);
     display:flex;align-items:center;gap:6px;
@@ -243,53 +394,94 @@
     width:4px;height:4px;border-radius:50%;
     background:var(--grad-brand);
   }
-  .card .val{
-    font-size:15px;
-    font-weight:700;
-    color:var(--ink);
-  }
+  .card .val{font-size:15px;font-weight:800;color:var(--ink);}
   .card .val small{
     display:block;
     font-size:11px;
-    font-weight:500;
+    font-weight:600;
     color:var(--ink-faint);
     margin-top:2px;
   }
 
-  .grid-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-  }
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-  .steps{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:10px;}
-  .steps li{
-    display:flex;gap:10px;
-    font-size:13px;
-    line-height:1.5;
-    color:var(--ink);
+  /* STEP track (circle badges + chevrons) */
+  .step-track{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    margin-top:8px;
+    gap:2px;
   }
-  .steps .num{
-    flex:none;
-    width:20px;height:20px;
+  .step-node{flex:1;text-align:center;min-width:0;}
+  .step-circle{
+    width:44px;height:44px;
+    margin:0 auto 8px;
     border-radius:50%;
     background:var(--grad-brand);
     color:#fff;
-    font-size:11px;font-weight:800;
     display:flex;align-items:center;justify-content:center;
-    margin-top:1px;
+    font-size:18px;
+    box-shadow:0 6px 14px rgba(255,45,158,0.3);
+  }
+  .step-badge{
+    font-size:10px;
+    font-weight:800;
+    color:var(--blue-deep);
+    letter-spacing:.04em;
+    margin-bottom:4px;
+  }
+  .step-node p{
+    font-size:10px;
+    line-height:1.4;
+    color:var(--ink-dim);
+    margin:0;
+  }
+  .step-chevron{
+    flex:none;
+    color:var(--card-border);
+    font-size:20px;
+    font-weight:800;
+    padding-top:10px;
   }
 
-  .prize-list{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;}
-  .prize-list li{
-    display:flex;justify-content:space-between;align-items:baseline;
-    font-size:12.5px;
-    padding-bottom:8px;
-    border-bottom:1px dashed var(--card-border);
+  /* Prize row */
+  .prize-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+  .prize-card{
+    position:relative;
+    background:#f4f8ff;
+    border:1px solid var(--card-border);
+    border-radius:var(--radius-sm);
+    padding:22px 6px 12px;
+    text-align:center;
   }
-  .prize-list li:last-child{border-bottom:none;padding-bottom:0;}
-  .prize-list .name{color:var(--ink-dim);font-weight:600;}
-  .prize-list .amount{color:var(--ink);font-weight:800;}
+  .prize-card .rank{
+    position:absolute;
+    top:0;left:50%;
+    transform:translate(-50%,-50%);
+    font-size:9.5px;
+    font-weight:800;
+    color:#fff;
+    padding:3px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+    box-shadow:0 4px 10px rgba(0,20,80,0.2);
+  }
+  .rank-1{background:linear-gradient(95deg,#ff2d9e,#9a3bff);}
+  .rank-2{background:linear-gradient(95deg,#9a3bff,#1567ff);}
+  .rank-3{background:linear-gradient(95deg,#1567ff,#35d0ff);}
+  .prize-card .emoji{font-size:22px;margin-bottom:6px;}
+  .prize-card .count{font-size:12px;font-weight:800;color:var(--blue-deep);}
+  .prize-card .item{font-size:10px;color:var(--ink-dim);margin-top:2px;line-height:1.4;}
+
+  .hashtag-note{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--ink-dim);
+    margin-top:14px;
+    line-height:1.6;
+  }
+  .hashtag-note b{color:var(--blue);}
 
   .cta-btn{
     display:block;
@@ -303,7 +495,7 @@
     font-size:15px;
     font-weight:800;
     letter-spacing:.02em;
-    box-shadow:0 10px 28px rgba(255,45,158,0.28);
+    box-shadow:0 10px 28px rgba(255,45,158,0.3);
     border:none;
     cursor:pointer;
   }
@@ -313,13 +505,16 @@
     color:var(--ink-faint);
     margin-top:10px;
   }
+  #sec-event .cta-note{color:rgba(255,255,255,0.65);}
 
-  /* ---------- GALLERY ---------- */
+  /* ---------- GALLERY (works) ---------- */
+  #sec-gallery{background:#eef4ff;}
   .gallery-title{
     text-align:center;
     font-size:22px;
     font-weight:900;
     margin:0 0 6px;
+    color:var(--ink);
   }
   .gallery-sub{
     text-align:center;
@@ -329,44 +524,45 @@
   }
   .hashtag{
     display:inline-flex;
-    margin:0 auto 22px;
     padding:8px 16px;
     border-radius:999px;
-    background:rgba(255,255,255,0.06);
+    background:#fff;
     border:1px solid var(--card-border);
     font-size:13px;
     font-weight:800;
-    color:var(--cyan);
+    color:var(--blue);
+    box-shadow:0 6px 16px rgba(0,20,80,0.08);
   }
-  .hashtag-wrap{text-align:center;}
+  .hashtag-wrap{text-align:center;margin-bottom:20px;}
 
-  .work-card{
-    background:var(--card);
-    border:1px solid var(--card-border);
-    border-radius:var(--radius-lg);
-    overflow:hidden;
-    margin-bottom:16px;
+  .img-box{position:relative;background:#0a1836;overflow:hidden;}
+  .img-box img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
   }
-  .work-media{
-    position:relative;
-    aspect-ratio:4/5;
+  .img-box .ph{
+    position:absolute;inset:0;
     background:
       radial-gradient(circle at 18% 12%, rgba(255,45,158,0.9), transparent 38%),
       radial-gradient(circle at 85% 22%, rgba(61,220,255,0.75), transparent 40%),
       radial-gradient(circle at 70% 78%, rgba(61,123,255,0.85), transparent 45%),
       radial-gradient(circle at 15% 85%, rgba(154,59,255,0.8), transparent 45%),
       conic-gradient(from 210deg at 50% 50%, #ff2d9e, #9a3bff, #3d7bff, #3ddcff, #ff2d9e);
-    display:flex;
-    align-items:flex-end;
-    padding:14px;
+    filter:blur(30px) saturate(140%);
   }
-  .work-media::after{
-    content:"";
-    position:absolute;inset:0;
-    backdrop-filter:blur(38px) saturate(140%);
+
+  .work-card{
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    margin-bottom:16px;
+    background:#fff;
+    box-shadow:0 12px 28px rgba(0,20,80,0.14);
   }
+  .work-media{aspect-ratio:4/5;display:flex;align-items:flex-end;padding:14px;}
   .work-media .festival-label,
-  .work-media .tag{ z-index:1; }
+  .work-media .tag{position:relative;z-index:1;}
   .work-media .tag{
     background:rgba(0,0,0,0.35);
     backdrop-filter:blur(6px);
@@ -381,6 +577,7 @@
   .work-media .festival-label{
     position:absolute;
     top:16px;left:14px;right:14px;
+    z-index:1;
     font-size:15px;
     font-weight:900;
     color:#fff;
@@ -391,77 +588,98 @@
     display:block;
     font-size:10.5px;
     font-weight:600;
-    color:rgba(255,255,255,0.75);
+    color:rgba(255,255,255,0.8);
     margin-top:4px;
     letter-spacing:.05em;
   }
   .work-body{padding:14px 16px 18px;}
   .work-meta{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:12px;
-    color:var(--ink-dim);
-    margin-bottom:10px;
-    flex-wrap:wrap;
+    display:flex;align-items:center;gap:8px;
+    font-size:12px;color:var(--ink-dim);
+    margin-bottom:10px;flex-wrap:wrap;
   }
   .work-meta b{color:var(--ink);font-weight:700;}
   .work-meta .sep{color:var(--ink-faint);}
   .work-prompt{
-    font-size:12px;
-    line-height:1.6;
-    color:var(--ink-dim);
-    background:rgba(255,255,255,0.04);
-    border-left:2px solid var(--magenta);
+    font-size:12px;line-height:1.6;color:var(--ink-dim);
+    background:#f4f8ff;
+    border-left:3px solid var(--magenta);
     padding:10px 12px;
     border-radius:0 8px 8px 0;
   }
   .work-prompt b{color:var(--ink);font-weight:700;}
 
-  .mini-row{
-    display:flex;
-    gap:10px;
+  /* ---------- STORY CAROUSEL ---------- */
+  #sec-story{background:linear-gradient(180deg, var(--blue-deep), var(--blue) 60%, var(--blue-mid));}
+  .story-head{text-align:center;margin-bottom:18px;}
+  .story-head h2{font-size:19px;font-weight:900;color:#fff;margin:0 0 6px;line-height:1.4;}
+  .story-head p{font-size:12px;color:var(--on-blue-dim);margin:0;line-height:1.6;}
+
+  .carousel-wrap{position:relative;}
+  .story-row{
+    display:flex;gap:10px;
     overflow-x:auto;
-    padding-bottom:4px;
-    margin-bottom:6px;
+    scroll-snap-type:x mandatory;
+    padding:2px 2px 8px;
     scrollbar-width:none;
   }
-  .mini-row::-webkit-scrollbar{display:none;}
-  .mini-card{
+  .story-row::-webkit-scrollbar{display:none;}
+  .story-card{
     flex:none;
-    width:96px;
+    width:118px;
     aspect-ratio:3/4;
     border-radius:14px;
-    border:1px solid var(--card-border);
-    display:flex;
-    align-items:flex-end;
-    padding:8px;
-    font-size:10px;
-    font-weight:700;
-    color:#fff;
+    scroll-snap-align:start;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 8px 18px rgba(0,10,50,0.3);
   }
-  .mini-card span{text-shadow:0 1px 6px rgba(0,0,0,0.5);}
-  .mini1{background:radial-gradient(circle at 30% 20%, rgba(255,45,158,0.6), transparent 55%), radial-gradient(circle at 80% 90%, rgba(61,123,255,0.55), transparent 55%), #1c1a3a;}
-  .mini2{background:radial-gradient(circle at 70% 20%, rgba(154,59,255,0.65), transparent 55%), radial-gradient(circle at 20% 90%, rgba(61,220,255,0.4), transparent 55%), #1c1a3a;}
-  .mini3{background:radial-gradient(circle at 50% 15%, rgba(255,45,158,0.5), transparent 55%), radial-gradient(circle at 30% 90%, rgba(154,59,255,0.55), transparent 55%), #1c1a3a;}
+  .story-card .play-mini{
+    position:absolute;
+    left:8px;bottom:8px;
+    width:24px;height:24px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.92);
+    display:flex;align-items:center;justify-content:center;
+    z-index:1;
+  }
+  .story-card .play-mini svg{width:9px;height:9px;margin-left:1px;}
+  .story-card .label{
+    position:absolute;left:8px;right:8px;bottom:8px;
+    font-size:9.5px;font-weight:700;color:#fff;
+    text-shadow:0 1px 6px rgba(0,0,0,0.5);
+    z-index:1;
+  }
+  .story1 .ph{background:radial-gradient(circle at 30% 20%,rgba(255,45,158,.6),transparent 55%),radial-gradient(circle at 80% 90%,rgba(61,123,255,.55),transparent 55%),#14204a;filter:none;}
+  .story2 .ph{background:radial-gradient(circle at 70% 20%,rgba(154,59,255,.65),transparent 55%),radial-gradient(circle at 20% 90%,rgba(61,220,255,.4),transparent 55%),#14204a;filter:none;}
+  .story3 .ph{background:radial-gradient(circle at 50% 15%,rgba(255,45,158,.5),transparent 55%),radial-gradient(circle at 30% 90%,rgba(154,59,255,.55),transparent 55%),#14204a;filter:none;}
+  .story4 .ph{background:radial-gradient(circle at 40% 80%,rgba(53,208,255,.55),transparent 55%),radial-gradient(circle at 80% 20%,rgba(255,45,158,.45),transparent 55%),#14204a;filter:none;}
+  .story5 .ph{background:radial-gradient(circle at 60% 30%,rgba(154,59,255,.55),transparent 55%),radial-gradient(circle at 20% 80%,rgba(21,103,255,.5),transparent 55%),#14204a;filter:none;}
+  .story6 .ph{background:radial-gradient(circle at 25% 25%,rgba(255,45,158,.5),transparent 55%),radial-gradient(circle at 85% 75%,rgba(53,208,255,.5),transparent 55%),#14204a;filter:none;}
 
-  footer{
-    padding:28px 22px 40px;
-    text-align:center;
+  .carousel-arrow{
+    position:absolute;top:50%;
+    transform:translateY(-50%);
+    width:32px;height:32px;
+    border-radius:50%;
+    background:#fff;
+    color:var(--blue-deep);
+    border:none;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 14px rgba(0,10,50,0.35);
+    cursor:pointer;
+    z-index:2;
   }
+  .carousel-arrow.prev{left:-6px;}
+  .carousel-arrow.next{right:-6px;}
+  .carousel-arrow svg{width:14px;height:14px;}
+
+  footer{padding:26px 22px 40px;text-align:center;background:var(--blue-mid);}
   footer .foot-logo{
     font-family:"Nanum Pen Script", cursive;
-    font-size:16px;
-    background:var(--grad-brand);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    margin-bottom:8px;
+    font-size:16px;color:#fff;margin-bottom:8px;
   }
-  footer p{
-    font-size:10.5px;
-    color:var(--ink-faint);
-    line-height:1.7;
-    margin:0;
-  }
+  footer p{font-size:10.5px;color:var(--on-blue-dim);line-height:1.7;margin:0;}
 </style>
 </head>
 <body>
@@ -470,73 +688,137 @@
   <span class="active" data-dot="0"></span>
   <span data-dot="1"></span>
   <span data-dot="2"></span>
+  <span data-dot="3"></span>
 </div>
 
 <div class="page" id="scrollRoot">
 
   <!-- 1. 홍보 영상 / 도정 비전 설명 -->
   <section class="hero" data-sec="0" id="sec-hero">
-    <div class="logo">
-      <div class="line1">통<span class="mark">通</span>하는 충남</div>
-      <div class="line2">도민과 함께</div>
+    <div class="hero-bg" aria-hidden="true">
+      <img src="images/hero-bg.jpg" alt="" onerror="this.style.display='none'">
+      <div class="tint"></div>
+    </div>
+
+    <div class="logo-wrap">
+      <div class="logo">
+        <img class="logo-img" src="images/logo.png" alt="통하는 충남, 도민과 함께"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div class="logo-fallback" style="display:none;">
+          <div class="line1">통<span class="mark">通</span>하는 충남</div>
+          <div class="line2">도민과 함께</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cloud cloud-a" aria-hidden="true">☁️</div>
+    <div class="cloud cloud-b" aria-hidden="true">☁️</div>
+
+    <p class="hero-tagline">상상력으로 채우는<br><span class="hl">꼼꼼한 충남!</span></p>
+
+    <div class="glass-card">
+      <div class="glass-row">
+        <span class="label">이벤트 기간</span>
+        <span class="val">2026.09.01(화) ~ 09.30(수)</span>
+      </div>
+      <div class="glass-row">
+        <span class="label">당첨자 발표</span>
+        <span class="val">2026.10.15(목)</span>
+      </div>
+    </div>
+
+    <div class="mascot" aria-hidden="true">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+        <circle cx="32" cy="34" r="24" fill="#ffffff"/>
+        <circle cx="24" cy="32" r="3.2" fill="#0b1f4d"/>
+        <circle cx="40" cy="32" r="3.2" fill="#0b1f4d"/>
+        <path d="M23 41c3 3 15 3 18 0" stroke="#0b1f4d" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M32 10v6" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="32" cy="7" r="3.4" fill="#ff2d9e"/>
+      </svg>
     </div>
 
     <h1>홍보 영상</h1>
     <p class="sub">충남도정의 비전과 오늘, 영상으로 먼저 만나보세요</p>
 
-    <a class="video-card" href="#" aria-label="홍보 영상 재생">
-      <span class="play-btn">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg>
-      </span>
-    </a>
+    <div class="video-wrap">
+      <span class="video-callout">도민과 함께하는</span>
+      <div class="video-card" id="videoCard">
+        <div class="fallback"></div>
+        <img class="thumb" id="videoThumb" alt="" style="display:none;">
+        <div class="scrim"></div>
+        <button class="play-hit" id="playBtn" aria-label="홍보 영상 재생" type="button">
+          <span class="play-btn">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg>
+          </span>
+        </button>
+      </div>
+    </div>
     <p class="video-caption">통(通)하는 충남, 도민과 함께 만드는 변화 — 도정 비전 소개 영상</p>
-  </section>
 
-  <hr class="divider">
+    <span class="quote-pill">“ 통(通)하는 충남, 도민과 가장 가까운 길이 열린다 ”</span>
+  </section>
 
   <!-- 2. 이벤트 안내 -->
   <section data-sec="1" id="sec-event">
-    <div class="hashtag-wrap" style="margin-bottom:16px;">
+    <div class="hashtag-wrap" style="margin-bottom:16px;text-align:center;">
       <span class="eyebrow"><span class="dot"></span>GENERATIVE AI CHALLENGE</span>
     </div>
     <h2 class="event-title">이벤트 안내</h2>
-    <p class="event-headline">상상력으로 통하는 다채로운 충남<br><span class="accent">충청남도 이미지 생성형 AI 챌린지</span></p>
+    <p class="event-headline">상상력으로 통하는 다채로운 충남<span class="accent">충청남도 이미지 생성형 AI 챌린지</span></p>
     <p class="event-desc">내가 상상하는 충남, 이미지 생성형 AI로 펼쳐보세요.<br>모두와 함께 충남의 매력을 나눠주세요!</p>
-
-    <div class="grid-2">
-      <div class="card">
-        <h3>이벤트 기간</h3>
-        <div class="val">2026.09.01<small>~ 2026.09.30</small></div>
-      </div>
-      <div class="card">
-        <h3>당첨 발표</h3>
-        <div class="val">2026.10.15<small>충남도 SNS 채널 공지</small></div>
-      </div>
-    </div>
 
     <div class="card">
       <h3>이벤트 참여 방법</h3>
-      <ol class="steps">
-        <li><span class="num">1</span>생성형 AI로 '충남'을 주제로 한 이미지를 제작해요</li>
-        <li><span class="num">2</span>지정 해시태그와 함께 SNS(인스타그램 등)에 업로드해요</li>
-        <li><span class="num">3</span>이 페이지에 작품을 공유하고 신청을 완료해요</li>
-      </ol>
+      <div class="step-track">
+        <div class="step-node">
+          <div class="step-circle">✏️</div>
+          <div class="step-badge">Step 1</div>
+          <p>'충남'을 주제로<br>AI 이미지 제작</p>
+        </div>
+        <span class="step-chevron">›</span>
+        <div class="step-node">
+          <div class="step-circle">📮</div>
+          <div class="step-badge">Step 2</div>
+          <p>해시태그와 함께<br>SNS 업로드</p>
+        </div>
+        <span class="step-chevron">›</span>
+        <div class="step-node">
+          <div class="step-circle">🎁</div>
+          <div class="step-badge">Step 3</div>
+          <p>이 페이지에<br>작품 공유·신청</p>
+        </div>
+      </div>
     </div>
 
     <div class="card">
       <h3>경품 안내</h3>
-      <ul class="prize-list">
-        <li><span class="name">대상 (1명)</span><span class="amount">도지사상 + 100만원</span></li>
-        <li><span class="name">최우수상 (2명)</span><span class="amount">50만원 상당</span></li>
-        <li><span class="name">우수상 (10명)</span><span class="amount">10만원 상당</span></li>
-      </ul>
+      <div class="prize-grid">
+        <div class="prize-card">
+          <span class="rank rank-1">대상</span>
+          <div class="emoji">🏆</div>
+          <div class="count">1명</div>
+          <div class="item">도지사상 + 100만원</div>
+        </div>
+        <div class="prize-card">
+          <span class="rank rank-2">최우수</span>
+          <div class="emoji">🥈</div>
+          <div class="count">2명</div>
+          <div class="item">50만원 상당</div>
+        </div>
+        <div class="prize-card">
+          <span class="rank rank-3">우수</span>
+          <div class="emoji">🎧</div>
+          <div class="count">10명</div>
+          <div class="item">10만원 상당</div>
+        </div>
+      </div>
+      <p class="hashtag-note">SNS 공유 시 필수 해시태그 <b>#충남이미지AI챌린지 #통하는충남</b></p>
     </div>
 
     <a class="cta-btn" href="#">신청하기</a>
     <p class="cta-note">* 상세 일정 및 경품은 사정에 따라 변경될 수 있습니다</p>
   </section>
-
-  <hr class="divider">
 
   <!-- 3. 참가작품 공유 -->
   <section data-sec="2" id="sec-gallery">
@@ -547,14 +829,10 @@
       <span class="hashtag">#백제_문화</span>
     </div>
 
-    <div class="mini-row">
-      <div class="mini-card mini1"><span>#보령_머드축제</span></div>
-      <div class="mini-card mini2"><span>#서산_해미읍성</span></div>
-      <div class="mini-card mini3"><span>#태안_꽃지해변</span></div>
-    </div>
-
     <div class="work-card">
-      <div class="work-media">
+      <div class="img-box work-media">
+        <div class="ph"></div>
+        <img src="images/work-1.jpg" alt="보령 MUD FESTIVAL 참가작품" onerror="this.style.display='none'">
         <div class="festival-label">보령 MUD FESTIVAL<small>BORYEONG MUD FESTIVAL · AI GENERATED</small></div>
         <span class="tag">#백제_문화</span>
       </div>
@@ -572,14 +850,60 @@
     <a class="cta-btn" href="#">내 작품도 공유하기</a>
   </section>
 
+  <!-- 4. 스토리 캐러셀 -->
+  <section data-sec="3" id="sec-story">
+    <div class="story-head">
+      <h2>도민과 함께 만든<br>충남 혁신 이야기</h2>
+      <p>더 가까워진 도정 소통, 지금 바로 확인해보세요.</p>
+    </div>
+
+    <div class="carousel-wrap">
+      <button class="carousel-arrow prev" id="arrowPrev" aria-label="이전" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="story-row" id="storyRow">
+        <div class="story-card story1 img-box"><div class="ph"></div><img src="images/story-1.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">도정 브리핑</span></div>
+        <div class="story-card story2 img-box"><div class="ph"></div><img src="images/story-2.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">도민 인터뷰</span></div>
+        <div class="story-card story3 img-box"><div class="ph"></div><img src="images/story-3.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">현장 스케치</span></div>
+        <div class="story-card story4 img-box"><div class="ph"></div><img src="images/story-4.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">AI 챌린지</span></div>
+        <div class="story-card story5 img-box"><div class="ph"></div><img src="images/story-5.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">참여 후기</span></div>
+        <div class="story-card story6 img-box"><div class="ph"></div><img src="images/story-6.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">시상식</span></div>
+      </div>
+      <button class="carousel-arrow next" id="arrowNext" aria-label="다음" type="button">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+
   <footer>
     <div class="foot-logo">통하는 충남, 도민과 함께</div>
-    <p>충청남도 이미지 생성형 AI 챌린지 캠페인<br>본 페이지의 참가작품 예시는 안내용 샘플 콘텐츠입니다.</p>
+    <p>충청남도 이미지 생성형 AI 챌린지 캠페인<br>본 페이지의 참가작품·스토리 이미지는 안내용 샘플입니다.</p>
   </footer>
 
 </div>
 
 <script>
+  // ---- 여기에 실제 유튜브 영상 ID만 입력하면 썸네일/재생이 자동 연결됩니다 ----
+  // 예: https://www.youtube.com/watch?v=ABCD1234efg → 'ABCD1234efg'
+  const CONFIG = { youtubeId: 'iMdN4_a9LMk' };
+
+  const videoCard = document.getElementById('videoCard');
+  const videoThumb = document.getElementById('videoThumb');
+  const playBtn = document.getElementById('playBtn');
+
+  if (CONFIG.youtubeId) {
+    videoThumb.src = 'https://img.youtube.com/vi/' + CONFIG.youtubeId + '/hqdefault.jpg';
+    videoThumb.style.display = 'block';
+    playBtn.addEventListener('click', function(){
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + CONFIG.youtubeId + '?autoplay=1';
+      iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      iframe.setAttribute('allowfullscreen', '');
+      videoCard.innerHTML = '';
+      videoCard.appendChild(iframe);
+    });
+  }
+
   const dots = document.querySelectorAll('.dots span');
   const secs = document.querySelectorAll('[data-sec]');
   const io = new IntersectionObserver((entries)=>{
@@ -593,6 +917,10 @@
     });
   }, {threshold:0.5});
   secs.forEach(s=>io.observe(s));
+
+  const storyRow = document.getElementById('storyRow');
+  document.getElementById('arrowPrev').addEventListener('click', ()=> storyRow.scrollBy({left:-260, behavior:'smooth'}));
+  document.getElementById('arrowNext').addEventListener('click', ()=> storyRow.scrollBy({left:260, behavior:'smooth'}));
 </script>
 
 </body>
