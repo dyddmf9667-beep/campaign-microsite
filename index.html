@@ -1,927 +1,668 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>통하는 충남, 도민과 함께 | 충청남도 이미지 생성형 AI 챌린지</title>
-<meta name="description" content="충청남도 이미지 생성형 AI 챌린지 — 상상력으로 통하는 다채로운 충남">
+<title>충청남도 AI 이미지 챌린지</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  /* =====================================================================
-     이미지/영상 교체 방법
-     1) 유튜브 홍보영상: 아래 CONFIG.youtubeId 에 영상 ID만 입력하면
-        (예: https://www.youtube.com/watch?v=ABCD1234 → 'ABCD1234')
-        썸네일이 자동으로 뜨고, 클릭하면 그 자리에서 재생됩니다.
-     2) 참가작품 / 스토리 이미지: images 폴더에 아래 파일명 그대로
-        이미지를 넣으면 자동으로 교체됩니다. (파일이 없으면 그라데이션
-        플레이스홀더가 대신 보여서 페이지가 깨지지 않습니다)
-          images/work-1.jpg      (참가작품 대표 이미지)
-          images/story-1.jpg ~ story-6.jpg (하단 스토리 카드 6장)
-     ===================================================================== */
-  :root{
-    --blue-deep:#0038b8;
-    --blue:#1567ff;
-    --blue-mid:#2f8bff;
-    --blue-light:#6fb3ff;
-    --cyan:#35d0ff;
-    --magenta:#ff2d9e;
-    --violet:#9a3bff;
-    --grad-brand: linear-gradient(95deg, var(--magenta) 0%, var(--violet) 55%, var(--blue) 100%);
-    --ink:#0b1f4d;
-    --ink-dim:#4a5d8a;
-    --ink-faint:#8091ba;
-    --on-blue:#ffffff;
-    --on-blue-dim:#cfe0ff;
-    --card:#ffffff;
-    --card-border:rgba(11,31,77,0.08);
-    --radius-lg:26px;
-    --radius-md:18px;
-    --radius-sm:12px;
-    --maxw:460px;
+  :root {
+    --ink: oklch(24% 0.02 255);
+    --muted: oklch(46% 0.02 255);
+    --faint: oklch(60% 0.015 255);
+    --bg: oklch(94% 0.01 255);
+    --surface: oklch(100% 0 0);
+    --surface-soft: oklch(98% 0.005 255);
+    --line: oklch(89% 0.012 255);
+    --blue: oklch(40% 0.15 258);
+    --blue-strong: oklch(33% 0.15 258);
+    --blue-tint: oklch(93% 0.03 258);
+    --blue-on: white;
+    --violet: oklch(40% 0.15 305);
+    --violet-tint: oklch(93% 0.03 305);
+    --shadow: oklch(0% 0 0 / 0.1);
+    --backdrop: oklch(15% 0.01 255 / 0.55);
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    background:var(--blue);
-    color:var(--on-blue);
-    font-family:"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Malgun Gothic", sans-serif;
-    -webkit-font-smoothing:antialiased;
-    min-height:100vh;
-    word-break:keep-all;
-    overflow-wrap:break-word;
-    overflow-x:hidden;
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: oklch(93% 0.01 255); --muted: oklch(72% 0.015 255); --faint: oklch(56% 0.015 255);
+      --bg: oklch(14% 0.014 260); --surface: oklch(20% 0.016 260); --surface-soft: oklch(23% 0.016 260);
+      --line: oklch(32% 0.02 260); --blue: oklch(72% 0.12 258); --blue-strong: oklch(78% 0.11 258);
+      --blue-tint: oklch(28% 0.05 258); --blue-on: oklch(14% 0.02 258);
+      --violet: oklch(72% 0.12 305); --violet-tint: oklch(28% 0.05 305);
+      --shadow: oklch(0% 0 0 / 0.4); --backdrop: oklch(5% 0.01 255 / 0.7);
+    }
   }
-  a{color:inherit;text-decoration:none;}
-  button{font-family:inherit;}
-  .page{
-    max-width:var(--maxw);
-    margin:0 auto;
-    min-height:100vh;
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 0 80px rgba(0,0,0,0.35);
-  }
-  @media (min-width:520px){
-    body{padding:28px 0;}
-    .page{border-radius:32px;min-height:auto;}
+  :root[data-theme="dark"] {
+    --ink: oklch(93% 0.01 255); --muted: oklch(72% 0.015 255); --faint: oklch(56% 0.015 255);
+    --bg: oklch(14% 0.014 260); --surface: oklch(20% 0.016 260); --surface-soft: oklch(23% 0.016 260);
+    --line: oklch(32% 0.02 260); --blue: oklch(72% 0.12 258); --blue-strong: oklch(78% 0.11 258);
+    --blue-tint: oklch(28% 0.05 258); --blue-on: oklch(14% 0.02 258);
+    --violet: oklch(72% 0.12 305); --violet-tint: oklch(28% 0.05 305);
+    --shadow: oklch(0% 0 0 / 0.4); --backdrop: oklch(5% 0.01 255 / 0.7);
   }
 
-  /* progress dots */
-  .dots{
-    position:fixed;
-    right:14px;
-    top:50%;
-    transform:translateY(-50%);
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:50;
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    display: flex; justify-content: center; padding: 32px 16px 64px;
   }
-  @media (min-width:520px){ .dots{ right: max(14px, calc((100vw - var(--maxw)) / 2 - 30px)); } }
-  .dots span{
-    width:6px;height:6px;border-radius:50%;
-    background:rgba(255,255,255,0.35);
-    transition:all .35s ease;
+  h1, h2, h3 { margin: 0; font-family: 'Do Hyeon', 'IBM Plex Sans KR', sans-serif; font-weight: 400; text-wrap: balance; }
+  p { margin: 0; }
+  ul, ol { margin: 0; padding: 0; list-style: none; }
+  button { font-family: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .draft-tag { max-width: 430px; width: 100%; margin: 0 auto 14px; font-size: 12px; color: var(--faint); text-align: center; }
+  .frame {
+    width: 100%; max-width: 430px; background: var(--surface); border-radius: 22px; overflow: hidden;
+    box-shadow: 0 20px 60px var(--shadow); border: 1px solid var(--line);
   }
-  .dots span.active{
-    background:#fff;
-    height:20px;
-    box-shadow:0 0 10px rgba(255,255,255,0.6);
+  .section { padding: 34px 26px; border-top: 1px solid var(--line); }
+  .section:first-child { border-top: none; }
+  .section-title { font-size: 19px; text-align: center; }
+  .section-eyebrow { display: block; text-align: center; font-size: 11px; letter-spacing: 0.12em; color: var(--faint); margin-bottom: 6px; }
+
+  /* --- Hero --- */
+  .hero { text-align: center; }
+  .badge-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .tong-badge {
+    flex: 0 0 auto; width: 42px; height: 42px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--violet) 100%);
+    color: white; font-family: 'Do Hyeon', sans-serif; font-size: 19px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mark-text {
+    font-size: 27px; background: linear-gradient(100deg, var(--blue) 20%, var(--violet) 90%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .mark-sub { margin-top: 6px; font-size: 13px; letter-spacing: 0.08em; color: var(--muted); }
+  .hero-desc { margin-top: 18px; font-size: 14px; line-height: 1.75; color: var(--muted); }
+  .hero-cta {
+    margin: 22px auto 0; display: inline-flex; align-items: center; gap: 6px;
+    padding: 11px 20px; border-radius: 999px; border: 1.5px solid var(--blue);
+    background: transparent; color: var(--blue); font-size: 13px; font-weight: 600;
   }
 
-  section{position:relative;padding:52px 22px 44px;}
+  /* --- Carousels (shared: video + gallery) --- */
+  .carousel-note { margin-top: 6px; text-align: center; font-size: 11.5px; color: var(--faint); font-style: italic; }
+  .carousel-wrap { position: relative; margin-top: 18px; }
+  .carousel {
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 6px;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  .carousel-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
+  .cbtn {
+    width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+    display: flex; align-items: center; justify-content: center; color: var(--muted);
+  }
+  .cbtn:disabled { opacity: 0.35; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--line); }
+  .dot.active { background: var(--blue); width: 16px; transition: width .2s ease; }
 
-  .eyebrow{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:11.5px;
-    font-weight:800;
-    letter-spacing:.06em;
-    color:var(--blue-deep);
-    background:#fff;
-    padding:7px 14px;
-    border-radius:999px;
-    margin-bottom:14px;
-    box-shadow:0 6px 16px rgba(0,20,80,0.18);
+  /* --- Video carousel --- */
+  .vcard { flex: 0 0 86%; scroll-snap-align: center; }
+  .vframe {
+    position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; cursor: pointer;
+    background: linear-gradient(135deg, oklch(30% 0.06 255) 0%, oklch(20% 0.04 280) 100%);
+    display: flex; align-items: center; justify-content: center;
   }
-  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--grad-brand);}
+  .vframe-empty { cursor: default; }
+  .vframe-hint { position: relative; z-index: 1; font-size: 12px; color: oklch(88% 0.01 255); text-align: center; padding: 0 24px; }
+  .vthumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .vplay { position: relative; z-index: 1; }
+  .vframe iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .yt-badge {
+    position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px;
+    padding: 6px 10px; border-radius: 999px; background: oklch(0% 0 0 / 0.55); color: white; font-size: 11px; text-decoration: none;
+  }
+  .vtitle { margin-top: 12px; font-size: 14.5px; font-weight: 600; color: var(--ink); text-align: center; }
+  .vdesc { margin-top: 4px; font-size: 12px; color: var(--faint); text-align: center; font-style: italic; }
 
-  /* ---------- HERO (blue, dotted) ---------- */
-  .hero{
-    padding-top:36px;
-    background:
-      radial-gradient(circle at 18% 100%, rgba(255,255,255,0.16), transparent 45%),
-      radial-gradient(circle at 100% 0%, rgba(255,255,255,0.14), transparent 40%),
-      radial-gradient(circle, rgba(255,255,255,0.35) 1.4px, transparent 1.6px) 0 0/22px 22px,
-      linear-gradient(160deg, var(--blue-deep) 0%, var(--blue) 55%, var(--blue-mid) 100%);
+  /* --- Event --- */
+  .event-pitch { margin-top: 10px; text-align: center; font-size: 13.5px; line-height: 1.65; color: var(--violet); }
+  .info-grid { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .card-head { padding: 8px; text-align: center; font-size: 12.5px; font-weight: 700; color: var(--blue-on); background: var(--blue); }
+  .card-body { padding: 14px 10px; text-align: center; font-size: 12.5px; font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; }
+
+  .steps-card { margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .steps-body { padding: 16px 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .step { display: flex; gap: 10px; align-items: flex-start; }
+  .step-num {
+    flex: 0 0 auto; width: 22px; height: 22px; border-radius: 999px; background: var(--blue); color: var(--blue-on);
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px;
   }
-  .hero-bg{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    z-index:-1;
-  }
-  .hero-bg img{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-  }
-  .hero-bg .tint{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(165deg,
-      rgba(0,56,184,0.62) 0%,
-      rgba(21,103,255,0.5) 45%,
-      rgba(47,139,255,0.42) 75%,
-      rgba(47,139,255,0.6) 100%);
-  }
-  .logo-wrap{
-    display:flex;
-    justify-content:center;
-    margin-bottom:22px;
-  }
-  .logo{
-    text-align:center;
-    background:#fff;
-    padding:14px 26px 16px;
-    border-radius:20px;
-    box-shadow:0 10px 26px rgba(0,10,50,0.28);
-  }
-  .logo-img{
-    display:block;
-    max-width:240px;
-    width:100%;
-    height:auto;
-    margin:0 auto;
-  }
-  .logo .mark{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:30px;height:30px;
-    border-radius:50%;
-    background:#c22d8f;
-    color:#fff;
-    font-family:"Nanum Pen Script", cursive;
-    font-weight:700;
-    font-size:18px;
-    vertical-align:-5px;
-    margin:0 1px;
-    -webkit-text-stroke:0;
-  }
-  .logo .line1, .logo .line2{
-    font-family:"Nanum Pen Script", cursive;
-    font-weight:700;
-    color:#1a3faa;
-    -webkit-text-stroke:.4px #1a3faa;
-  }
-  .logo .line1{font-size:30px;line-height:1.1;}
-  .logo .line2{
-    font-size:26px;
-    line-height:1.25;
-    text-align:right;
-    margin-top:-2px;
+  .step p { font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .step-note { font-size: 12px; line-height: 1.6; color: var(--faint); padding-top: 2px; border-top: 1px dashed var(--line); margin-top: 2px; }
+  .step-note b { color: var(--muted); }
+  .keyword-line { font-size: 12.5px; color: var(--muted); padding-top: 2px; }
+  .keyword-line b { color: var(--blue); font-weight: 600; }
+
+  .prizes-title { margin-top: 22px; font-size: 14px; font-weight: 700; color: var(--muted); font-family: 'IBM Plex Sans KR', sans-serif; }
+  .prizes { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .prize { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line); }
+  .prize.gold { border: none; background: linear-gradient(135deg, var(--violet) 0%, var(--blue) 100%); }
+  .prize-rank { flex: 0 0 auto; font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .prize:not(.gold) .prize-rank { color: var(--blue); background: var(--blue-tint); }
+  .prize.gold .prize-rank { color: white; background: oklch(100% 0 0 / 0.22); }
+  .prize-name { font-size: 13.5px; font-weight: 500; color: var(--ink); }
+  .prize.gold .prize-name { color: white; font-weight: 600; }
+
+  .apply-btn {
+    margin-top: 22px; width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--blue);
+    color: var(--blue-on); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
   }
 
-  .cloud{
-    position:absolute;
-    font-size:26px;
-    opacity:.55;
-    filter:drop-shadow(0 4px 8px rgba(0,10,50,0.25));
+  /* --- Gallery carousel --- */
+  .gcard {
+    flex: 0 0 78%; scroll-snap-align: center; border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    background: var(--surface-soft);
   }
-  .cloud-a{top:120px;left:14px;}
-  .cloud-b{top:150px;right:18px;font-size:20px;}
+  .gimg {
+    position: relative; aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px; color: white; font-size: 12px; text-align: center; padding: 16px; overflow: hidden;
+  }
+  .gimg.tint-a { background: linear-gradient(150deg, var(--blue) 0%, oklch(55% 0.1 258) 100%); }
+  .gimg.tint-b { background: linear-gradient(150deg, var(--blue) 0%, var(--violet) 100%); }
+  .gimg.tint-c { background: linear-gradient(150deg, var(--violet) 0%, oklch(55% 0.1 305) 100%); }
+  .gbody { padding: 12px 14px 16px; }
+  .gtag { display: inline-block; font-size: 11.5px; font-weight: 700; color: var(--blue); }
+  .gname { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .gprompt-label { margin-top: 8px; font-size: 10.5px; letter-spacing: 0.06em; color: var(--faint); }
+  .gprompt-text { margin-top: 3px; font-size: 12px; line-height: 1.55; color: var(--muted); }
 
-  .hero-tagline{
-    text-align:center;
-    font-family:"Nanum Pen Script", cursive;
-    color:#fff;
-    font-size:19px;
-    line-height:1.5;
-    margin:0 0 16px;
-    text-shadow:0 4px 14px rgba(0,10,50,0.3);
-  }
-  .hero-tagline .hl{
-    display:block;
-    font-size:34px;
-    color:#ffe38a;
-    text-shadow:0 4px 16px rgba(0,10,50,0.35);
-  }
+  footer.section { text-align: center; }
+  footer p { font-size: 12px; color: var(--faint); }
+  footer p + p { margin-top: 4px; font-size: 11px; }
 
-  .glass-card{
-    background:rgba(255,255,255,0.14);
-    border:1px solid rgba(255,255,255,0.32);
-    -webkit-backdrop-filter:blur(6px);
-    backdrop-filter:blur(6px);
-    border-radius:var(--radius-md);
-    padding:4px 16px;
-    margin-bottom:22px;
+  /* --- Modal --- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: var(--backdrop); display: flex; align-items: flex-end;
+    justify-content: center; z-index: 50; opacity: 0; pointer-events: none; transition: opacity .18s ease;
   }
-  .glass-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:11px 0;
-    font-size:12.5px;
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  @media (min-width: 500px) { .modal-backdrop { align-items: center; } }
+  .modal {
+    width: 100%; max-width: 430px; max-height: 88vh; overflow-y: auto; background: var(--surface);
+    border-radius: 20px 20px 0 0; padding: 24px 24px 28px; transform: translateY(16px); transition: transform .18s ease;
   }
-  .glass-row + .glass-row{border-top:1px solid rgba(255,255,255,0.22);}
-  .glass-row .label{font-weight:700;color:#fff;}
-  .glass-row .val{font-weight:800;color:#ffe38a;}
-
-  .mascot{display:flex;justify-content:center;margin-bottom:6px;}
-
-  .hero h1{
-    text-align:center;
-    font-size:20px;
-    font-weight:900;
-    margin:0 0 6px;
-    color:#fff;
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  @media (min-width: 500px) { .modal { border-radius: 18px; } }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; }
+  .modal-head h2 { font-size: 18px; }
+  .modal-close { width: 30px; height: 30px; border-radius: 999px; border: none; background: var(--surface-soft); color: var(--muted); display: flex; align-items: center; justify-content: center; }
+  .field { margin-top: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; font-size: 14px;
+    font-family: inherit; color: var(--ink); background: var(--surface-soft); resize: none;
   }
-  .hero .sub{
-    text-align:center;
-    font-size:12.5px;
-    color:var(--on-blue-dim);
-    margin:0 0 22px;
-    line-height:1.6;
+  .field textarea { min-height: 72px; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+  .consent-row { margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; }
+  .consent-row input[type="checkbox"] { margin-top: 2px; width: 17px; height: 17px; accent-color: var(--blue); flex: 0 0 auto; }
+  .consent-row label { font-size: 12.5px; line-height: 1.6; color: var(--ink); }
+  .consent-row a { color: var(--blue); font-size: 12px; }
+  .form-error { margin-top: 12px; font-size: 12px; color: oklch(55% 0.18 25); display: none; }
+  .form-error.show { display: block; }
+  .modal-submit {
+    margin-top: 22px; width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--blue);
+    color: var(--blue-on); font-size: 14.5px; font-weight: 700;
   }
-
-  .video-wrap{position:relative;margin-bottom:10px;}
-  .video-callout{
-    position:absolute;
-    top:-12px;left:16px;
-    z-index:3;
-    background:#fff;
-    color:var(--blue-deep);
-    font-size:11px;
-    font-weight:800;
-    padding:6px 12px;
-    border-radius:999px;
-    box-shadow:0 6px 14px rgba(0,20,80,0.25);
+  .success-view { display: none; text-align: center; padding: 12px 4px 4px; }
+  .success-view.show { display: block; }
+  .success-icon {
+    margin: 0 auto; width: 52px; height: 52px; border-radius: 999px; background: var(--blue-tint);
+    display: flex; align-items: center; justify-content: center;
   }
-  .video-callout::after{
-    content:"";
-    position:absolute;left:22px;bottom:-5px;
-    width:10px;height:10px;
-    background:#fff;
-    transform:rotate(45deg);
-  }
-  .video-card{
-    position:relative;
-    aspect-ratio:16/9;
-    border-radius:var(--radius-md);
-    overflow:hidden;
-    background:#0a1836;
-    box-shadow:0 16px 34px rgba(0,10,50,0.35);
-    display:block;
-  }
-  .video-card img.thumb{
-    position:absolute;inset:0;
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-  }
-  .video-card iframe{
-    position:absolute;inset:0;
-    width:100%;height:100%;
-    border:0;
-  }
-  .video-card .fallback{
-    position:absolute;inset:0;
-    background:
-      radial-gradient(circle at 30% 20%, rgba(255,45,158,0.55), transparent 55%),
-      radial-gradient(circle at 75% 80%, rgba(61,123,255,0.6), transparent 55%),
-      #14204a;
-  }
-  .video-card .scrim{
-    position:absolute;inset:0;
-    background:linear-gradient(180deg, rgba(0,10,40,0.05), rgba(0,10,40,0.35));
-  }
-  .video-card button.play-hit{
-    position:absolute;inset:0;
-    width:100%;height:100%;
-    background:transparent;
-    border:0;
-    display:flex;align-items:center;justify-content:center;
-    cursor:pointer;
-    padding:0;
-  }
-  .play-btn{
-    width:56px;height:56px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.96);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 8px 22px rgba(0,0,0,0.35);
-  }
-  .play-btn svg{width:20px;height:20px;margin-left:3px;}
-  .video-caption{
-    text-align:center;
-    font-size:12px;
-    color:var(--on-blue-dim);
-    margin-top:12px;
-  }
-  .quote-pill{
-    display:block;
-    margin:16px auto 0;
-    max-width:320px;
-    text-align:center;
-    font-size:12.5px;
-    font-weight:700;
-    color:#fff;
-    background:rgba(255,255,255,0.12);
-    border:1px solid rgba(255,255,255,0.28);
-    padding:10px 18px;
-    border-radius:999px;
-    line-height:1.5;
-  }
-
-  /* ---------- EVENT ---------- */
-  #sec-event{
-    background:linear-gradient(180deg, var(--blue-mid) 0%, #eef4ff 90px, #eef4ff 100%);
-  }
-  .event-title{
-    text-align:center;
-    font-size:23px;
-    font-weight:900;
-    margin:0 0 10px;
-    color:#fff;
-  }
-  .event-headline{
-    text-align:center;
-    font-size:14.5px;
-    font-weight:700;
-    margin:0 0 8px;
-    color:#fff;
-  }
-  .event-headline .accent{
-    display:block;
-    margin-top:2px;
-    background:linear-gradient(95deg, #fff, var(--cyan));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    font-size:16px;
-  }
-  .event-desc{
-    text-align:center;
-    font-size:12.5px;
-    line-height:1.7;
-    color:var(--on-blue-dim);
-    margin:0 0 26px;
-  }
-
-  .card{
-    background:var(--card);
-    border:1px solid var(--card-border);
-    border-radius:var(--radius-md);
-    padding:16px;
-    margin-bottom:12px;
-    color:var(--ink);
-    box-shadow:0 10px 24px rgba(0,20,80,0.12);
-  }
-  .card h3{
-    font-size:12.5px;
-    font-weight:800;
-    margin:0 0 4px;
-    color:var(--ink-dim);
-    display:flex;align-items:center;gap:6px;
-  }
-  .card h3::before{
-    content:"";
-    width:4px;height:4px;border-radius:50%;
-    background:var(--grad-brand);
-  }
-  .card .val{font-size:15px;font-weight:800;color:var(--ink);}
-  .card .val small{
-    display:block;
-    font-size:11px;
-    font-weight:600;
-    color:var(--ink-faint);
-    margin-top:2px;
-  }
-
-  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-
-  /* STEP track (circle badges + chevrons) */
-  .step-track{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    margin-top:8px;
-    gap:2px;
-  }
-  .step-node{flex:1;text-align:center;min-width:0;}
-  .step-circle{
-    width:44px;height:44px;
-    margin:0 auto 8px;
-    border-radius:50%;
-    background:var(--grad-brand);
-    color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    font-size:18px;
-    box-shadow:0 6px 14px rgba(255,45,158,0.3);
-  }
-  .step-badge{
-    font-size:10px;
-    font-weight:800;
-    color:var(--blue-deep);
-    letter-spacing:.04em;
-    margin-bottom:4px;
-  }
-  .step-node p{
-    font-size:10px;
-    line-height:1.4;
-    color:var(--ink-dim);
-    margin:0;
-  }
-  .step-chevron{
-    flex:none;
-    color:var(--card-border);
-    font-size:20px;
-    font-weight:800;
-    padding-top:10px;
-  }
-
-  /* Prize row */
-  .prize-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
-  .prize-card{
-    position:relative;
-    background:#f4f8ff;
-    border:1px solid var(--card-border);
-    border-radius:var(--radius-sm);
-    padding:22px 6px 12px;
-    text-align:center;
-  }
-  .prize-card .rank{
-    position:absolute;
-    top:0;left:50%;
-    transform:translate(-50%,-50%);
-    font-size:9.5px;
-    font-weight:800;
-    color:#fff;
-    padding:3px 10px;
-    border-radius:999px;
-    white-space:nowrap;
-    box-shadow:0 4px 10px rgba(0,20,80,0.2);
-  }
-  .rank-1{background:linear-gradient(95deg,#ff2d9e,#9a3bff);}
-  .rank-2{background:linear-gradient(95deg,#9a3bff,#1567ff);}
-  .rank-3{background:linear-gradient(95deg,#1567ff,#35d0ff);}
-  .prize-card .emoji{font-size:22px;margin-bottom:6px;}
-  .prize-card .count{font-size:12px;font-weight:800;color:var(--blue-deep);}
-  .prize-card .item{font-size:10px;color:var(--ink-dim);margin-top:2px;line-height:1.4;}
-
-  .hashtag-note{
-    text-align:center;
-    font-size:11.5px;
-    color:var(--ink-dim);
-    margin-top:14px;
-    line-height:1.6;
-  }
-  .hashtag-note b{color:var(--blue);}
-
-  .cta-btn{
-    display:block;
-    text-align:center;
-    width:100%;
-    padding:16px;
-    margin-top:18px;
-    border-radius:999px;
-    background:var(--grad-brand);
-    color:#fff;
-    font-size:15px;
-    font-weight:800;
-    letter-spacing:.02em;
-    box-shadow:0 10px 28px rgba(255,45,158,0.3);
-    border:none;
-    cursor:pointer;
-  }
-  .cta-note{
-    text-align:center;
-    font-size:11px;
-    color:var(--ink-faint);
-    margin-top:10px;
-  }
-  #sec-event .cta-note{color:rgba(255,255,255,0.65);}
-
-  /* ---------- GALLERY (works) ---------- */
-  #sec-gallery{background:#eef4ff;}
-  .gallery-title{
-    text-align:center;
-    font-size:22px;
-    font-weight:900;
-    margin:0 0 6px;
-    color:var(--ink);
-  }
-  .gallery-sub{
-    text-align:center;
-    font-size:12.5px;
-    color:var(--ink-dim);
-    margin:0 0 20px;
-  }
-  .hashtag{
-    display:inline-flex;
-    padding:8px 16px;
-    border-radius:999px;
-    background:#fff;
-    border:1px solid var(--card-border);
-    font-size:13px;
-    font-weight:800;
-    color:var(--blue);
-    box-shadow:0 6px 16px rgba(0,20,80,0.08);
-  }
-  .hashtag-wrap{text-align:center;margin-bottom:20px;}
-
-  .img-box{position:relative;background:#0a1836;overflow:hidden;}
-  .img-box img{
-    position:absolute;inset:0;
-    width:100%;height:100%;
-    object-fit:cover;
-    display:block;
-  }
-  .img-box .ph{
-    position:absolute;inset:0;
-    background:
-      radial-gradient(circle at 18% 12%, rgba(255,45,158,0.9), transparent 38%),
-      radial-gradient(circle at 85% 22%, rgba(61,220,255,0.75), transparent 40%),
-      radial-gradient(circle at 70% 78%, rgba(61,123,255,0.85), transparent 45%),
-      radial-gradient(circle at 15% 85%, rgba(154,59,255,0.8), transparent 45%),
-      conic-gradient(from 210deg at 50% 50%, #ff2d9e, #9a3bff, #3d7bff, #3ddcff, #ff2d9e);
-    filter:blur(30px) saturate(140%);
-  }
-
-  .work-card{
-    border-radius:var(--radius-lg);
-    overflow:hidden;
-    margin-bottom:16px;
-    background:#fff;
-    box-shadow:0 12px 28px rgba(0,20,80,0.14);
-  }
-  .work-media{aspect-ratio:4/5;display:flex;align-items:flex-end;padding:14px;}
-  .work-media .festival-label,
-  .work-media .tag{position:relative;z-index:1;}
-  .work-media .tag{
-    background:rgba(0,0,0,0.35);
-    backdrop-filter:blur(6px);
-    border:1px solid rgba(255,255,255,0.18);
-    color:#fff;
-    font-size:11px;
-    font-weight:800;
-    padding:6px 10px;
-    border-radius:999px;
-    letter-spacing:.02em;
-  }
-  .work-media .festival-label{
-    position:absolute;
-    top:16px;left:14px;right:14px;
-    z-index:1;
-    font-size:15px;
-    font-weight:900;
-    color:#fff;
-    text-shadow:0 2px 10px rgba(0,0,0,0.4);
-    line-height:1.3;
-  }
-  .work-media .festival-label small{
-    display:block;
-    font-size:10.5px;
-    font-weight:600;
-    color:rgba(255,255,255,0.8);
-    margin-top:4px;
-    letter-spacing:.05em;
-  }
-  .work-body{padding:14px 16px 18px;}
-  .work-meta{
-    display:flex;align-items:center;gap:8px;
-    font-size:12px;color:var(--ink-dim);
-    margin-bottom:10px;flex-wrap:wrap;
-  }
-  .work-meta b{color:var(--ink);font-weight:700;}
-  .work-meta .sep{color:var(--ink-faint);}
-  .work-prompt{
-    font-size:12px;line-height:1.6;color:var(--ink-dim);
-    background:#f4f8ff;
-    border-left:3px solid var(--magenta);
-    padding:10px 12px;
-    border-radius:0 8px 8px 0;
-  }
-  .work-prompt b{color:var(--ink);font-weight:700;}
-
-  /* ---------- STORY CAROUSEL ---------- */
-  #sec-story{background:linear-gradient(180deg, var(--blue-deep), var(--blue) 60%, var(--blue-mid));}
-  .story-head{text-align:center;margin-bottom:18px;}
-  .story-head h2{font-size:19px;font-weight:900;color:#fff;margin:0 0 6px;line-height:1.4;}
-  .story-head p{font-size:12px;color:var(--on-blue-dim);margin:0;line-height:1.6;}
-
-  .carousel-wrap{position:relative;}
-  .story-row{
-    display:flex;gap:10px;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    padding:2px 2px 8px;
-    scrollbar-width:none;
-  }
-  .story-row::-webkit-scrollbar{display:none;}
-  .story-card{
-    flex:none;
-    width:118px;
-    aspect-ratio:3/4;
-    border-radius:14px;
-    scroll-snap-align:start;
-    position:relative;
-    overflow:hidden;
-    box-shadow:0 8px 18px rgba(0,10,50,0.3);
-  }
-  .story-card .play-mini{
-    position:absolute;
-    left:8px;bottom:8px;
-    width:24px;height:24px;
-    border-radius:50%;
-    background:rgba(255,255,255,0.92);
-    display:flex;align-items:center;justify-content:center;
-    z-index:1;
-  }
-  .story-card .play-mini svg{width:9px;height:9px;margin-left:1px;}
-  .story-card .label{
-    position:absolute;left:8px;right:8px;bottom:8px;
-    font-size:9.5px;font-weight:700;color:#fff;
-    text-shadow:0 1px 6px rgba(0,0,0,0.5);
-    z-index:1;
-  }
-  .story1 .ph{background:radial-gradient(circle at 30% 20%,rgba(255,45,158,.6),transparent 55%),radial-gradient(circle at 80% 90%,rgba(61,123,255,.55),transparent 55%),#14204a;filter:none;}
-  .story2 .ph{background:radial-gradient(circle at 70% 20%,rgba(154,59,255,.65),transparent 55%),radial-gradient(circle at 20% 90%,rgba(61,220,255,.4),transparent 55%),#14204a;filter:none;}
-  .story3 .ph{background:radial-gradient(circle at 50% 15%,rgba(255,45,158,.5),transparent 55%),radial-gradient(circle at 30% 90%,rgba(154,59,255,.55),transparent 55%),#14204a;filter:none;}
-  .story4 .ph{background:radial-gradient(circle at 40% 80%,rgba(53,208,255,.55),transparent 55%),radial-gradient(circle at 80% 20%,rgba(255,45,158,.45),transparent 55%),#14204a;filter:none;}
-  .story5 .ph{background:radial-gradient(circle at 60% 30%,rgba(154,59,255,.55),transparent 55%),radial-gradient(circle at 20% 80%,rgba(21,103,255,.5),transparent 55%),#14204a;filter:none;}
-  .story6 .ph{background:radial-gradient(circle at 25% 25%,rgba(255,45,158,.5),transparent 55%),radial-gradient(circle at 85% 75%,rgba(53,208,255,.5),transparent 55%),#14204a;filter:none;}
-
-  .carousel-arrow{
-    position:absolute;top:50%;
-    transform:translateY(-50%);
-    width:32px;height:32px;
-    border-radius:50%;
-    background:#fff;
-    color:var(--blue-deep);
-    border:none;
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 6px 14px rgba(0,10,50,0.35);
-    cursor:pointer;
-    z-index:2;
-  }
-  .carousel-arrow.prev{left:-6px;}
-  .carousel-arrow.next{right:-6px;}
-  .carousel-arrow svg{width:14px;height:14px;}
-
-  footer{padding:26px 22px 40px;text-align:center;background:var(--blue-mid);}
-  footer .foot-logo{
-    font-family:"Nanum Pen Script", cursive;
-    font-size:16px;color:#fff;margin-bottom:8px;
-  }
-  footer p{font-size:10.5px;color:var(--on-blue-dim);line-height:1.7;margin:0;}
+  .success-view h2 { margin-top: 16px; font-size: 17px; }
+  .success-view p { margin-top: 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .success-close { margin-top: 22px; width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: none; color: var(--ink); font-size: 14px; font-weight: 600; }
 </style>
-</head>
-<body>
 
-<div class="dots" aria-hidden="true">
-  <span class="active" data-dot="0"></span>
-  <span data-dot="1"></span>
-  <span data-dot="2"></span>
-  <span data-dot="3"></span>
-</div>
+<p class="draft-tag">모바일 인터페이스 시안 · 충청남도 이미지 AI 챌린지</p>
 
-<div class="page" id="scrollRoot">
+<div class="frame">
 
-  <!-- 1. 홍보 영상 / 도정 비전 설명 -->
-  <section class="hero" data-sec="0" id="sec-hero">
-    <div class="hero-bg" aria-hidden="true">
-      <img src="images/hero-bg.jpg" alt="" onerror="this.style.display='none'">
-      <div class="tint"></div>
-    </div>
-
-    <div class="logo-wrap">
-      <div class="logo">
-        <img class="logo-img" src="images/logo.png" alt="통하는 충남, 도민과 함께"
-             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-        <div class="logo-fallback" style="display:none;">
-          <div class="line1">통<span class="mark">通</span>하는 충남</div>
-          <div class="line2">도민과 함께</div>
-        </div>
+  <!-- 1. 슬로건 / 설명 / 도정비전 메뉴 -->
+  <section class="section hero">
+    <div class="badge-row">
+      <span class="tong-badge">통</span>
+      <div>
+        <h1 class="mark-text">하는 충남</h1>
       </div>
     </div>
+    <p class="mark-sub">도민과 함께</p>
+    <p class="hero-desc">단절을 넘어 사람과 사람, 지역과 미래를 연결하는,<br>더 넓은 기회와 미래를 만들어 나가는 충청남도</p>
+    <button class="hero-cta" type="button" id="visionBtn">
+      도정비전 상세보기
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </section>
 
-    <div class="cloud cloud-a" aria-hidden="true">☁️</div>
-    <div class="cloud cloud-b" aria-hidden="true">☁️</div>
-
-    <p class="hero-tagline">상상력으로 채우는<br><span class="hl">꼼꼼한 충남!</span></p>
-
-    <div class="glass-card">
-      <div class="glass-row">
-        <span class="label">이벤트 기간</span>
-        <span class="val">2026.09.01(화) ~ 09.30(수)</span>
-      </div>
-      <div class="glass-row">
-        <span class="label">당첨자 발표</span>
-        <span class="val">2026.10.15(목)</span>
-      </div>
-    </div>
-
-    <div class="mascot" aria-hidden="true">
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-        <circle cx="32" cy="34" r="24" fill="#ffffff"/>
-        <circle cx="24" cy="32" r="3.2" fill="#0b1f4d"/>
-        <circle cx="40" cy="32" r="3.2" fill="#0b1f4d"/>
-        <path d="M23 41c3 3 15 3 18 0" stroke="#0b1f4d" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M32 10v6" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-        <circle cx="32" cy="7" r="3.4" fill="#ff2d9e"/>
-      </svg>
-    </div>
-
-    <h1>홍보 영상</h1>
-    <p class="sub">충남도정의 비전과 오늘, 영상으로 먼저 만나보세요</p>
-
-    <div class="video-wrap">
-      <span class="video-callout">도민과 함께하는</span>
-      <div class="video-card" id="videoCard">
-        <div class="fallback"></div>
-        <img class="thumb" id="videoThumb" alt="" style="display:none;">
-        <div class="scrim"></div>
-        <button class="play-hit" id="playBtn" aria-label="홍보 영상 재생" type="button">
-          <span class="play-btn">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg>
-          </span>
+  <!-- 2. 홍보 영상 (캐러셀) -->
+  <section class="section">
+    <h2 class="section-title">충청남도 도정비전 홍보영상</h2>
+    <p class="carousel-note">좌우로 넘기며 여러 영상을 볼 수 있어요</p>
+    <div class="carousel-wrap">
+      <div class="carousel" id="videoTrack"></div>
+      <div class="carousel-controls">
+        <button class="cbtn" id="prevVideoBtn" type="button" aria-label="이전 영상">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dots" id="videoDots"></div>
+        <button class="cbtn" id="nextVideoBtn" type="button" aria-label="다음 영상">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
       </div>
     </div>
-    <p class="video-caption">통(通)하는 충남, 도민과 함께 만드는 변화 — 도정 비전 소개 영상</p>
-
-    <span class="quote-pill">“ 통(通)하는 충남, 도민과 가장 가까운 길이 열린다 ”</span>
   </section>
 
-  <!-- 2. 이벤트 안내 -->
-  <section data-sec="1" id="sec-event">
-    <div class="hashtag-wrap" style="margin-bottom:16px;text-align:center;">
-      <span class="eyebrow"><span class="dot"></span>GENERATIVE AI CHALLENGE</span>
-    </div>
-    <h2 class="event-title">이벤트 안내</h2>
-    <p class="event-headline">상상력으로 통하는 다채로운 충남<span class="accent">충청남도 이미지 생성형 AI 챌린지</span></p>
-    <p class="event-desc">내가 상상하는 충남, 이미지 생성형 AI로 펼쳐보세요.<br>모두와 함께 충남의 매력을 나눠주세요!</p>
+  <!-- 3. 이벤트 안내 -->
+  <section class="section">
+    <span class="section-eyebrow">EVENT</span>
+    <h2 class="section-title">충청남도 이미지<br>생성형 AI 챌린지</h2>
+    <p class="event-pitch">내가 상상하는 충남, 이미지 AI 챌린지에 참여하고,<br>모두와 함께 충남의 매력을 나눠보세요!</p>
 
-    <div class="card">
-      <h3>이벤트 참여 방법</h3>
-      <div class="step-track">
-        <div class="step-node">
-          <div class="step-circle">✏️</div>
-          <div class="step-badge">Step 1</div>
-          <p>'충남'을 주제로<br>AI 이미지 제작</p>
-        </div>
-        <span class="step-chevron">›</span>
-        <div class="step-node">
-          <div class="step-circle">📮</div>
-          <div class="step-badge">Step 2</div>
-          <p>해시태그와 함께<br>SNS 업로드</p>
-        </div>
-        <span class="step-chevron">›</span>
-        <div class="step-node">
-          <div class="step-circle">🎁</div>
-          <div class="step-badge">Step 3</div>
-          <p>이 페이지에<br>작품 공유·신청</p>
-        </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="card-head">이벤트 기간</div>
+        <div class="card-body">26.11.2(월) ~<br>26.11.15(일)<br>15일간</div>
+      </div>
+      <div class="info-card">
+        <div class="card-head">결과 발표</div>
+        <div class="card-body">26.11.25(수)</div>
       </div>
     </div>
 
-    <div class="card">
-      <h3>경품 안내</h3>
-      <div class="prize-grid">
-        <div class="prize-card">
-          <span class="rank rank-1">대상</span>
-          <div class="emoji">🏆</div>
-          <div class="count">1명</div>
-          <div class="item">도지사상 + 100만원</div>
-        </div>
-        <div class="prize-card">
-          <span class="rank rank-2">최우수</span>
-          <div class="emoji">🥈</div>
-          <div class="count">2명</div>
-          <div class="item">50만원 상당</div>
-        </div>
-        <div class="prize-card">
-          <span class="rank rank-3">우수</span>
-          <div class="emoji">🎧</div>
-          <div class="count">10명</div>
-          <div class="item">10만원 상당</div>
-        </div>
+    <div class="steps-card">
+      <div class="card-head">이벤트 참여 방법</div>
+      <div class="steps-body">
+        <div class="step"><span class="step-num">1</span><p>제시된 키워드 중 하나를 선택해서 AI를 활용해 이미지 생성</p></div>
+        <div class="step"><span class="step-num">2</span><p>생성한 이미지와 AI 프롬프트, 이름(닉네임 대체 가능), 연락처를 함께 작성 후 제출</p></div>
+        <div class="step"><span class="step-num">3</span><p>이미지를 SNS에 공유하면 당첨 확률 UP!</p></div>
+        <p class="keyword-line">주제 키워드(1안) — <b>AI 산업혁신 · 사회안전망 · 지속가능성</b></p>
+        <p class="step-note">게시물 업로드 시 인스타그램 계정 <b>@chungnam_official</b> 태그 및 해시태그(#통하는충남 #충청남도AI챌린지) 등록 필수</p>
       </div>
-      <p class="hashtag-note">SNS 공유 시 필수 해시태그 <b>#충남이미지AI챌린지 #통하는충남</b></p>
     </div>
 
-    <a class="cta-btn" href="#">신청하기</a>
-    <p class="cta-note">* 상세 일정 및 경품은 사정에 따라 변경될 수 있습니다</p>
+    <p class="prizes-title">경품 안내</p>
+    <div class="prizes">
+      <div class="prize gold"><span class="prize-rank">1등 · 1명</span><span class="prize-name">오즈모 액션캠 45만원</span></div>
+      <div class="prize"><span class="prize-rank">2등 · 10명</span><span class="prize-name">네이버페이 3만원</span></div>
+      <div class="prize"><span class="prize-rank">3등 · 30명</span><span class="prize-name">투썸플레이스 쿠폰 1만원</span></div>
+    </div>
+
+    <button class="apply-btn" type="button" id="openModalBtn">
+      신청하기
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </section>
 
-  <!-- 3. 참가작품 공유 -->
-  <section data-sec="2" id="sec-gallery">
-    <h2 class="gallery-title">참가작품 공유</h2>
-    <p class="gallery-sub">도민들이 상상한 충남의 모습을 만나보세요</p>
-
-    <div class="hashtag-wrap">
-      <span class="hashtag">#백제_문화</span>
-    </div>
-
-    <div class="work-card">
-      <div class="img-box work-media">
-        <div class="ph"></div>
-        <img src="images/work-1.jpg" alt="보령 MUD FESTIVAL 참가작품" onerror="this.style.display='none'">
-        <div class="festival-label">보령 MUD FESTIVAL<small>BORYEONG MUD FESTIVAL · AI GENERATED</small></div>
-        <span class="tag">#백제_문화</span>
-      </div>
-      <div class="work-body">
-        <div class="work-meta">
-          <b>별빛여행자</b><span class="sep">·</span>충남 보령<span class="sep">·</span>생성형 AI
-        </div>
-        <div class="work-prompt">
-          <b>프롬프트</b><br>
-          2026년 충남의 오늘날, 백제 계백 장군이 보령 대표 축제를 즐기는 모습을 만들어주세요
-        </div>
-      </div>
-    </div>
-
-    <a class="cta-btn" href="#">내 작품도 공유하기</a>
-  </section>
-
-  <!-- 4. 스토리 캐러셀 -->
-  <section data-sec="3" id="sec-story">
-    <div class="story-head">
-      <h2>도민과 함께 만든<br>충남 혁신 이야기</h2>
-      <p>더 가까워진 도정 소통, 지금 바로 확인해보세요.</p>
-    </div>
-
+  <!-- 4. 참가작품 공유 (캐러셀) -->
+  <section class="section">
+    <h2 class="section-title">참가작품 공유</h2>
+    <p class="carousel-note">좌우로 넘기며 참가작품을 확인할 수 있어요</p>
     <div class="carousel-wrap">
-      <button class="carousel-arrow prev" id="arrowPrev" aria-label="이전" type="button">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="story-row" id="storyRow">
-        <div class="story-card story1 img-box"><div class="ph"></div><img src="images/story-1.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">도정 브리핑</span></div>
-        <div class="story-card story2 img-box"><div class="ph"></div><img src="images/story-2.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">도민 인터뷰</span></div>
-        <div class="story-card story3 img-box"><div class="ph"></div><img src="images/story-3.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">현장 스케치</span></div>
-        <div class="story-card story4 img-box"><div class="ph"></div><img src="images/story-4.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">AI 챌린지</span></div>
-        <div class="story-card story5 img-box"><div class="ph"></div><img src="images/story-5.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">참여 후기</span></div>
-        <div class="story-card story6 img-box"><div class="ph"></div><img src="images/story-6.jpg" alt="" onerror="this.style.display='none'"><span class="play-mini"><svg viewBox="0 0 24 24" fill="none"><path d="M6 4L20 12L6 20V4Z" fill="#ff2d9e"/></svg></span><span class="label">시상식</span></div>
+      <div class="carousel" id="carousel"></div>
+      <div class="carousel-controls">
+        <button class="cbtn" id="prevBtn" type="button" aria-label="이전 작품">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dots" id="dots"></div>
+        <button class="cbtn" id="nextBtn" type="button" aria-label="다음 작품">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
       </div>
-      <button class="carousel-arrow next" id="arrowNext" aria-label="다음" type="button">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
     </div>
   </section>
 
-  <footer>
-    <div class="foot-logo">통하는 충남, 도민과 함께</div>
-    <p>충청남도 이미지 생성형 AI 챌린지 캠페인<br>본 페이지의 참가작품·스토리 이미지는 안내용 샘플입니다.</p>
+  <footer class="section">
+    <p>충청남도</p>
+    <p>문의 : [담당부서 연락처를 입력해주세요]</p>
   </footer>
 
 </div>
 
+<!-- 신청 모달 -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <form id="applyForm">
+      <div class="modal-head">
+        <h2 id="modalTitle">이벤트 참여 신청</h2>
+        <button class="modal-close" type="button" id="closeModalBtn" aria-label="닫기">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="fName">이름 (닉네임 가능)</label>
+        <input id="fName" type="text" placeholder="이름 또는 닉네임을 입력해주세요">
+      </div>
+      <div class="field">
+        <label for="fPhone">연락처</label>
+        <input id="fPhone" type="tel" placeholder="010-0000-0000">
+      </div>
+      <div class="field">
+        <label for="fPrompt">이미지 프롬프트</label>
+        <textarea id="fPrompt" placeholder="이미지 생성에 사용한 프롬프트를 입력해주세요"></textarea>
+      </div>
+
+      <div class="consent-row">
+        <input type="checkbox" id="fConsent">
+        <label for="fConsent">[필수] 개인정보 수집 및 이용에 동의합니다 <a href="#" id="consentDetail">자세히 보기</a></label>
+      </div>
+
+      <p class="form-error" id="formError">필수 항목을 모두 입력하고, 개인정보 수집·이용에 동의해주세요.</p>
+
+      <button class="modal-submit" type="submit">제출하기</button>
+    </form>
+
+    <div class="success-view" id="successView">
+      <div class="success-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.4"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>신청이 접수되었습니다</h2>
+      <p>제출해주신 프롬프트와 정보는 담당자 확인 후<br>당첨자 선정에 활용됩니다.</p>
+      <button class="success-close" type="button" id="successCloseBtn">닫기</button>
+    </div>
+
+  </div>
+</div>
+
 <script>
-  // ---- 여기에 실제 유튜브 영상 ID만 입력하면 썸네일/재생이 자동 연결됩니다 ----
-  // 예: https://www.youtube.com/watch?v=ABCD1234efg → 'ABCD1234efg'
-  const CONFIG = { youtubeId: 'iMdN4_a9LMk' };
+/* =========================================================================
+   ▼▼▼  아래 두 목록만 고쳐서 쓰시면 됩니다  ▼▼▼
+   - VIDEOS  : 상단 홍보영상 캐러셀에 들어갈 유튜브 영상 목록
+   - GALLERY : 하단 참가작품 캐러셀에 들어갈 이미지 목록
+   - { ... } 블록을 콤마(,)로 이어붙이면 슬라이드가 자동으로 늘어납니다.
+   - 항목을 지우면 슬라이드 수도 자동으로 줄어듭니다.
+   ========================================================================= */
 
-  const videoCard = document.getElementById('videoCard');
-  const videoThumb = document.getElementById('videoThumb');
-  const playBtn = document.getElementById('playBtn');
+  var VIDEOS = [
+    {
+      title: "충청남도 도정비전 홍보영상",
+      youtubeId: "",              // 유튜브 주소 watch?v= 뒤의 영상 ID (예: dQw4w9WgXcQ). 비워두면 "ID를 입력해주세요"로 표시됩니다.
+      description: "영상 설명을 입력해주세요"
+    }
+    // ,{ title: "두 번째 영상 제목", youtubeId: "영상ID", description: "영상 설명" }
+  ];
 
-  if (CONFIG.youtubeId) {
-    videoThumb.src = 'https://img.youtube.com/vi/' + CONFIG.youtubeId + '/hqdefault.jpg';
-    videoThumb.style.display = 'block';
-    playBtn.addEventListener('click', function(){
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://www.youtube.com/embed/' + CONFIG.youtubeId + '?autoplay=1';
-      iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-      iframe.setAttribute('allowfullscreen', '');
-      videoCard.innerHTML = '';
-      videoCard.appendChild(iframe);
+  var GALLERY = [
+    {
+      image: "",                  // 이미지 파일 경로 또는 URL (예: images/entry1.jpg). 비워두면 예시 색상 카드로 표시됩니다.
+      tag: "#AI 산업혁신",
+      name: "충남 최고",
+      prompt: "2026년 충남의 오늘날, 백제 계백 장군이 보령 머드 축제를 즐기는 모습을 만들어줘"
+    },
+    {
+      image: "",
+      tag: "#사회안전망",
+      name: "",
+      prompt: ""
+    },
+    {
+      image: "",
+      tag: "#지속가능성",
+      name: "",
+      prompt: ""
+    }
+    // ,{ image: "images/entry4.jpg", tag: "#지속가능성", name: "닉네임", prompt: "프롬프트 내용" }
+  ];
+
+/* ▲▲▲  여기까지가 직접 수정하는 영역입니다  ▲▲▲ ========================= */
+
+
+  // ---------- 공통: 좌우 캐러셀 동작 ----------
+  function setupCarousel(trackEl, prevBtn, nextBtn, dotsWrap, gapPx) {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function cards() { return Array.prototype.slice.call(trackEl.children); }
+    function cardStep() {
+      var list = cards();
+      if (!list.length) return 1;
+      return list[0].getBoundingClientRect().width + gapPx;
+    }
+    function currentIndex() { return Math.round(trackEl.scrollLeft / cardStep()); }
+    function renderDots() {
+      dotsWrap.innerHTML = '';
+      cards().forEach(function (_, i) {
+        var d = document.createElement('span');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsWrap.appendChild(d);
+      });
+    }
+    function updateUI() {
+      var list = cards();
+      var idx = Math.max(0, Math.min(list.length - 1, currentIndex()));
+      var dots = dotsWrap.querySelectorAll('.dot');
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = list.length === 0 || idx === list.length - 1;
+    }
+    function goTo(idx) {
+      var list = cards();
+      idx = Math.max(0, Math.min(list.length - 1, idx));
+      trackEl.scrollTo({ left: idx * cardStep(), behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+    prevBtn.addEventListener('click', function () { goTo(currentIndex() - 1); });
+    nextBtn.addEventListener('click', function () { goTo(currentIndex() + 1); });
+    trackEl.addEventListener('scroll', function () { window.requestAnimationFrame(updateUI); });
+    window.addEventListener('resize', updateUI);
+    renderDots();
+    updateUI();
+  }
+
+  function playIconSvg() {
+    return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5-11-6.5z" fill="var(--blue-strong)"/></svg>';
+  }
+  function ytIconSvg() {
+    return '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.6-.5-5.3c-.3-1-.9-1.7-2-2C18.6 4 12 4 12 4s-6.6 0-8.5.7c-1 .3-1.8 1-2 2C1 8.4 1 12 1 12s0 3.6.5 5.3c.3 1 1 1.7 2 2C5.4 20 12 20 12 20s6.6 0 8.5-.7c1-.3 1.7-1 2-2 .5-1.7.5-5.3.5-5.3z"/><path d="M9.8 15.5V8.5l6.4 3.5-6.4 3.5z" fill="white"/></svg>';
+  }
+  function imgIconSvg() {
+    return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 15l-5-5-9 9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  // ---------- 홍보영상 캐러셀 렌더링 ----------
+  function renderVideos() {
+    var track = document.getElementById('videoTrack');
+    track.innerHTML = '';
+
+    VIDEOS.forEach(function (v) {
+      var id = (v.youtubeId || '').trim();
+
+      var card = document.createElement('article');
+      card.className = 'vcard';
+
+      var frame = document.createElement('div');
+      frame.className = 'vframe';
+
+      if (id) {
+        var thumb = document.createElement('img');
+        thumb.className = 'vthumb';
+        thumb.loading = 'lazy';
+        thumb.alt = '';
+        thumb.src = 'https://img.youtube.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg';
+        frame.appendChild(thumb);
+
+        var play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'play-btn vplay';
+        play.setAttribute('aria-label', '영상 재생');
+        play.innerHTML = playIconSvg();
+        frame.appendChild(play);
+
+        var badge = document.createElement('a');
+        badge.className = 'yt-badge';
+        badge.href = 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+        badge.target = '_blank';
+        badge.rel = 'noopener';
+        badge.innerHTML = ytIconSvg() + '<span>유튜브에서 보기</span>';
+        badge.addEventListener('click', function (e) { e.stopPropagation(); });
+        frame.appendChild(badge);
+
+        frame.addEventListener('click', function () {
+          frame.innerHTML = '';
+          var iframe = document.createElement('iframe');
+          iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
+          iframe.title = v.title || 'YouTube video';
+          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+          iframe.setAttribute('allowfullscreen', '');
+          frame.appendChild(iframe);
+        });
+      } else {
+        frame.classList.add('vframe-empty');
+        var hint = document.createElement('span');
+        hint.className = 'vframe-hint';
+        hint.textContent = '유튜브 영상 ID를 입력해주세요';
+        frame.appendChild(hint);
+      }
+
+      card.appendChild(frame);
+
+      var title = document.createElement('p');
+      title.className = 'vtitle';
+      title.textContent = v.title || '[영상 제목을 입력해주세요]';
+      card.appendChild(title);
+
+      var desc = document.createElement('p');
+      desc.className = 'vdesc';
+      desc.textContent = v.description || '[영상 설명을 입력해주세요]';
+      card.appendChild(desc);
+
+      track.appendChild(card);
     });
   }
 
-  const dots = document.querySelectorAll('.dots span');
-  const secs = document.querySelectorAll('[data-sec]');
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting){
-        const i = e.target.getAttribute('data-sec');
-        dots.forEach(d=>d.classList.remove('active'));
-        const target = document.querySelector('.dots span[data-dot="'+i+'"]');
-        if(target) target.classList.add('active');
+  // ---------- 참가작품 캐러셀 렌더링 ----------
+  function renderGallery() {
+    var track = document.getElementById('carousel');
+    track.innerHTML = '';
+    var tints = ['tint-a', 'tint-b', 'tint-c'];
+
+    GALLERY.forEach(function (g, i) {
+      var card = document.createElement('article');
+      card.className = 'gcard';
+
+      var imgWrap = document.createElement('div');
+      imgWrap.className = 'gimg';
+
+      function showPlaceholder() {
+        imgWrap.innerHTML = '';
+        imgWrap.className = 'gimg ' + tints[i % tints.length];
+        imgWrap.innerHTML = imgIconSvg();
       }
+
+      if (g.image) {
+        var img = document.createElement('img');
+        img.src = g.image;
+        img.alt = g.name || '';
+        img.loading = 'lazy';
+        img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+        img.addEventListener('error', showPlaceholder);
+        imgWrap.appendChild(img);
+      } else {
+        showPlaceholder();
+      }
+      card.appendChild(imgWrap);
+
+      var body = document.createElement('div');
+      body.className = 'gbody';
+
+      var tag = document.createElement('span');
+      tag.className = 'gtag';
+      tag.textContent = g.tag || '';
+      body.appendChild(tag);
+
+      var name = document.createElement('p');
+      name.className = 'gname';
+      name.textContent = g.name || '[닉네임]';
+      body.appendChild(name);
+
+      var label = document.createElement('p');
+      label.className = 'gprompt-label';
+      label.textContent = 'PROMPT';
+      body.appendChild(label);
+
+      var prompt = document.createElement('p');
+      prompt.className = 'gprompt-text';
+      prompt.textContent = g.prompt || '[제출된 프롬프트가 여기에 표시됩니다]';
+      body.appendChild(prompt);
+
+      card.appendChild(body);
+      track.appendChild(card);
     });
-  }, {threshold:0.5});
-  secs.forEach(s=>io.observe(s));
+  }
 
-  const storyRow = document.getElementById('storyRow');
-  document.getElementById('arrowPrev').addEventListener('click', ()=> storyRow.scrollBy({left:-260, behavior:'smooth'}));
-  document.getElementById('arrowNext').addEventListener('click', ()=> storyRow.scrollBy({left:260, behavior:'smooth'}));
+  renderVideos();
+  renderGallery();
+
+  setupCarousel(
+    document.getElementById('videoTrack'),
+    document.getElementById('prevVideoBtn'),
+    document.getElementById('nextVideoBtn'),
+    document.getElementById('videoDots'),
+    12
+  );
+  setupCarousel(
+    document.getElementById('carousel'),
+    document.getElementById('prevBtn'),
+    document.getElementById('nextBtn'),
+    document.getElementById('dots'),
+    12
+  );
+
+  // ---------- 신청 모달 ----------
+  var backdrop = document.getElementById('modalBackdrop');
+  var openBtn = document.getElementById('openModalBtn');
+  var closeBtn = document.getElementById('closeModalBtn');
+  var successCloseBtn = document.getElementById('successCloseBtn');
+  var form = document.getElementById('applyForm');
+  var successView = document.getElementById('successView');
+  var formError = document.getElementById('formError');
+  var lastFocused = null;
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () { document.getElementById('fName').focus(); }, 50);
+  }
+  function closeModal() {
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+    form.style.display = '';
+    form.reset();
+    successView.classList.remove('show');
+    formError.classList.remove('show');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  successCloseBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('fName').value.trim();
+    var phone = document.getElementById('fPhone').value.trim();
+    var prompt = document.getElementById('fPrompt').value.trim();
+    var consent = document.getElementById('fConsent').checked;
+
+    if (!name || !phone || !prompt || !consent) {
+      formError.classList.add('show');
+      return;
+    }
+    formError.classList.remove('show');
+    form.style.display = 'none';
+    successView.classList.add('show');
+  });
+
+  document.getElementById('visionBtn').addEventListener('click', function () { this.blur(); });
+  document.getElementById('consentDetail').addEventListener('click', function (e) { e.preventDefault(); });
 </script>
-
-</body>
-</html>
