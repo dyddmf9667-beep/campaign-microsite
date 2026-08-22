@@ -1,0 +1,875 @@
+<title>충청남도 AI 이미지 챌린지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gaegu:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: oklch(22% 0.03 252);
+    --muted: oklch(45% 0.02 250);
+    --faint: oklch(60% 0.015 250);
+    --bg: oklch(96% 0.008 250);
+    --surface: oklch(100% 0 0);
+    --surface-soft: oklch(97% 0.008 250);
+    --line: oklch(88% 0.014 250);
+    --blue: oklch(46% 0.17 252);
+    --blue-strong: oklch(32% 0.15 254);
+    --blue-tint: oklch(93% 0.035 252);
+    --blue-on: white;
+    --violet: oklch(60% 0.13 232);
+    --violet-tint: oklch(93% 0.03 232);
+    --shadow: oklch(0% 0 0 / 0.1);
+    --backdrop: oklch(15% 0.02 250 / 0.55);
+    /* 히어로는 항상 하늘색 밴드로 고정 — 라이트/다크 모드에 따라 바뀌지 않습니다 */
+    --hero-deep: oklch(34% 0.15 255);
+    --hero-mid: oklch(48% 0.16 250);
+    --hero-light: oklch(72% 0.11 235);
+    --on-hero: white;
+    --on-hero-dim: oklch(90% 0.02 250);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: oklch(93% 0.01 250); --muted: oklch(72% 0.015 250); --faint: oklch(56% 0.015 250);
+      --bg: oklch(14% 0.014 255); --surface: oklch(20% 0.016 255); --surface-soft: oklch(23% 0.016 255);
+      --line: oklch(32% 0.02 255); --blue: oklch(74% 0.13 252); --blue-strong: oklch(80% 0.11 252);
+      --blue-tint: oklch(28% 0.05 252); --blue-on: oklch(14% 0.02 252);
+      --violet: oklch(74% 0.11 232); --violet-tint: oklch(28% 0.045 232);
+      --shadow: oklch(0% 0 0 / 0.4); --backdrop: oklch(5% 0.01 250 / 0.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: oklch(93% 0.01 250); --muted: oklch(72% 0.015 250); --faint: oklch(56% 0.015 250);
+    --bg: oklch(14% 0.014 255); --surface: oklch(20% 0.016 255); --surface-soft: oklch(23% 0.016 255);
+    --line: oklch(32% 0.02 255); --blue: oklch(74% 0.13 252); --blue-strong: oklch(80% 0.11 252);
+    --blue-tint: oklch(28% 0.05 252); --blue-on: oklch(14% 0.02 252);
+    --violet: oklch(74% 0.11 232); --violet-tint: oklch(28% 0.045 232);
+    --shadow: oklch(0% 0 0 / 0.4); --backdrop: oklch(5% 0.01 250 / 0.7);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { width: 100%; overflow-x: hidden; }
+  body {
+    margin: 0; width: 100%; background: var(--surface); color: var(--ink);
+    font-family: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', sans-serif;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 { margin: 0; font-family: 'Do Hyeon', 'IBM Plex Sans KR', sans-serif; font-weight: 400; text-wrap: balance; }
+  p { margin: 0; }
+  ul, ol { margin: 0; padding: 0; list-style: none; }
+  button { font-family: inherit; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+  .frame { width: 100%; max-width: 600px; margin: 0 auto; background: var(--surface); overflow: hidden; }
+  .section { padding: 34px 20px; background: var(--surface); }
+  .section-title { font-size: 19px; text-align: center; }
+  .section-eyebrow { display: block; text-align: center; font-size: 11px; letter-spacing: 0.12em; color: var(--faint); margin-bottom: 6px; }
+
+  /* --- 물결 구분선: 섹션 사이를 색이 채워진 파도 모양으로 이어줍니다 --- */
+  .wave-divider { display: block; width: 100%; height: 44px; line-height: 0; }
+  .wave-divider svg { display: block; width: 100%; height: 100%; }
+  .wave-video-to-event { background: var(--surface); }
+  .wave-video-to-event path { fill: var(--blue-tint); }
+  .wave-event-to-gallery { background: var(--blue-tint); }
+  .wave-event-to-gallery path { fill: var(--surface); }
+  .wave-gallery-to-footer { background: var(--surface); }
+  .wave-gallery-to-footer path { fill: var(--hero-mid); }
+
+  /* --- Hero (배경 사진 사용 영역) --- */
+  .hero {
+    position: relative; overflow: hidden; text-align: center; color: var(--on-hero);
+    padding-top: 56px; padding-bottom: 68px;
+    background:
+      radial-gradient(circle, oklch(100% 0 0 / 0.35) 1.3px, transparent 1.5px) 0 0/24px 24px,
+      linear-gradient(165deg, var(--hero-deep) 0%, var(--hero-mid) 55%, var(--hero-light) 100%);
+  }
+  .hero-bg { position: absolute; inset: 0; z-index: 0; }
+  .hero-bg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  .hero-bg .hero-scrim {
+    position: absolute; inset: 0;
+    background: linear-gradient(165deg, oklch(34% 0.15 255 / 0.68) 0%, oklch(48% 0.16 250 / 0.55) 55%, oklch(72% 0.11 235 / 0.45) 100%);
+  }
+  /* 히어로 사진 하단을 직접 파도 모양으로 잘라내는 오버레이 — 배경이 그러데이션이든 사진이든 항상 딱 맞물립니다 */
+  .hero-wave { position: absolute; left: 0; right: 0; bottom: -1px; z-index: 1; line-height: 0; }
+  .hero-wave svg { display: block; width: 100%; height: 44px; }
+  .hero-wave path { fill: var(--surface); }
+  .hero-content { position: relative; z-index: 2; }
+  .hero-logo {
+    display: block; max-width: 240px; width: 100%; height: auto; margin: 0 auto;
+    filter:
+      drop-shadow(2px 0 0 white) drop-shadow(-2px 0 0 white)
+      drop-shadow(0 2px 0 white) drop-shadow(0 -2px 0 white)
+      drop-shadow(1.4px 1.4px 0 white) drop-shadow(-1.4px 1.4px 0 white)
+      drop-shadow(1.4px -1.4px 0 white) drop-shadow(-1.4px -1.4px 0 white)
+      drop-shadow(0 6px 14px oklch(0% 0 0 / 0.35));
+  }
+  .hero-desc { margin-top: 20px; font-size: 14px; line-height: 1.75; color: var(--on-hero-dim); }
+  .hero-cta {
+    margin: 22px auto 0; display: inline-flex; align-items: center; gap: 6px;
+    padding: 11px 22px; border-radius: 999px; border: none;
+    background: oklch(100% 0 0); color: oklch(32% 0.15 254); font-size: 13px; font-weight: 700;
+    text-decoration: none; box-shadow: 0 8px 20px oklch(0% 0 0 / 0.18);
+  }
+
+  /* --- Carousels (shared: video + gallery) --- */
+  .carousel-note { margin-top: 6px; text-align: center; font-size: 11.5px; color: var(--faint); font-style: italic; }
+  .carousel-wrap { position: relative; margin-top: 18px; }
+  .carousel {
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 2px 2px 6px;
+    scrollbar-width: none;
+  }
+  .carousel::-webkit-scrollbar { display: none; }
+  .carousel-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
+  .cbtn {
+    width: 32px; height: 32px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface);
+    display: flex; align-items: center; justify-content: center; color: var(--muted);
+  }
+  .cbtn:disabled { opacity: 0.35; }
+  .dots { display: flex; gap: 6px; }
+  .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--line); }
+  .dot.active { background: var(--blue); width: 16px; transition: width .2s ease; }
+
+  /* --- Video carousel --- */
+  .vcard { position: relative; flex: 0 0 86%; scroll-snap-align: center; padding-top: 14px; }
+  .vcallout {
+    position: absolute; top: 0; left: 16px; z-index: 3;
+    background: var(--surface); color: var(--blue-strong); font-size: 11px; font-weight: 700;
+    padding: 6px 13px; border-radius: 999px; box-shadow: 0 6px 14px oklch(0% 0 0 / 0.18);
+    max-width: calc(100% - 32px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .vcallout::after {
+    content: ""; position: absolute; left: 18px; bottom: -5px; width: 9px; height: 9px;
+    background: var(--surface); transform: rotate(45deg);
+  }
+  .vframe {
+    position: relative; width: 100%; aspect-ratio: 16/9; border-radius: 14px; overflow: hidden; cursor: pointer;
+    background:
+      radial-gradient(circle at 18% 20%, oklch(48% 0.13 232 / 0.55), transparent 55%),
+      radial-gradient(circle at 82% 85%, oklch(48% 0.13 252 / 0.6), transparent 55%),
+      oklch(18% 0.02 265);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .vframe-empty { cursor: default; }
+  .vframe-hint { position: relative; z-index: 1; font-size: 12px; color: oklch(88% 0.01 255); text-align: center; padding: 0 24px; }
+  .vthumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .vscrim {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, oklch(0% 0 0 / 0.08) 0%, oklch(0% 0 0 / 0.1) 55%, oklch(0% 0 0 / 0.4) 100%);
+  }
+  .play-btn {
+    width: 54px; height: 54px; border-radius: 999px; background: oklch(100% 0 0 / 0.94); border: none;
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px oklch(0% 0 0 / 0.35);
+    transition: transform .15s ease;
+  }
+  .play-btn:hover { transform: scale(1.06); }
+  .vplay { position: relative; z-index: 2; }
+  .vframe iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; z-index: 2; }
+  .yt-badge {
+    position: absolute; bottom: 10px; right: 10px; z-index: 2; display: flex; align-items: center; gap: 5px;
+    padding: 6px 10px; border-radius: 999px; background: oklch(0% 0 0 / 0.55); color: white; font-size: 11px; text-decoration: none;
+  }
+  .vdesc { margin-top: 10px; font-size: 12.5px; color: var(--faint); text-align: center; line-height: 1.5; }
+
+  /* --- Event (연한 하늘색 배경 영역 — 물결로 위아래 섹션과 구분) --- */
+  .event-bg { background: var(--blue-tint); }
+  .event-pitch { margin-top: 10px; text-align: center; font-size: 13.5px; line-height: 1.65; color: var(--violet); }
+  .info-grid { margin-top: 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .info-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .card-head { padding: 8px; text-align: center; font-size: 12.5px; font-weight: 700; color: var(--blue-on); background: var(--blue); }
+  .card-body { padding: 14px 10px; text-align: center; font-size: 12.5px; font-weight: 600; line-height: 1.5; font-variant-numeric: tabular-nums; }
+
+  .steps-card { background: var(--surface); margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .steps-grid { padding: 18px 10px 4px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .step-col { text-align: center; }
+  .step-tag {
+    display: inline-block; font-family: 'Do Hyeon', sans-serif; font-size: 10.5px; letter-spacing: 0.03em;
+    color: var(--blue); background: var(--blue-tint); padding: 3px 10px; border-radius: 999px;
+  }
+  .step-icon {
+    margin: 10px auto 8px; width: 42px; height: 42px; border-radius: 999px;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--violet) 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-title { font-size: 11.5px; line-height: 1.5; color: var(--ink); font-weight: 600; }
+  .step-extra { padding: 4px 16px 0; }
+  .keyword-line { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .keyword-line b { color: var(--blue); font-weight: 600; }
+  .step-callout { margin: 12px 16px 16px; padding: 12px 14px; border-radius: 12px; background: var(--blue-tint); }
+  .step-callout p { font-size: 11.5px; line-height: 1.6; color: var(--blue-strong); }
+  .step-callout b { color: var(--violet); }
+
+  .prizes-title { margin-top: 22px; font-size: 14px; font-weight: 700; color: var(--muted); font-family: 'IBM Plex Sans KR', sans-serif; }
+  .prizes { margin-top: 10px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .prize-item { text-align: center; }
+  .prize-photo {
+    position: relative; aspect-ratio: 1/1; border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--line); background: var(--surface-soft);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .prize-item.gold .prize-photo { border: none; box-shadow: 0 6px 18px oklch(0% 0 0 / 0.18); }
+  .prize-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .prize-badge {
+    position: absolute; top: 6px; left: 6px; z-index: 1; font-size: 10px; font-weight: 700; color: white;
+    padding: 3px 8px; border-radius: 999px; background: var(--blue);
+  }
+  .prize-item.gold .prize-badge { background: linear-gradient(135deg, var(--violet) 0%, var(--blue) 100%); }
+  .prize-name { margin-top: 8px; font-size: 11px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+
+  .apply-btn {
+    margin-top: 22px; width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--blue);
+    color: var(--blue-on); font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+
+  /* --- Gallery carousel --- */
+  .gcard {
+    flex: 0 0 78%; scroll-snap-align: center; border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    background: var(--surface-soft);
+  }
+  .gimg {
+    position: relative; aspect-ratio: 4/5; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 8px; color: white; font-size: 12px; text-align: center; padding: 16px; overflow: hidden;
+  }
+  .tint-a { background: linear-gradient(150deg, var(--blue) 0%, oklch(55% 0.1 252) 100%); }
+  .tint-b { background: linear-gradient(150deg, var(--blue) 0%, var(--violet) 100%); }
+  .tint-c { background: linear-gradient(150deg, var(--violet) 0%, oklch(58% 0.11 218) 100%); }
+  .gbody { padding: 12px 14px 16px; }
+  .gtag { display: inline-block; font-size: 11.5px; font-weight: 700; color: var(--blue); }
+  .gname { margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .gprompt-label { margin-top: 8px; font-size: 10.5px; letter-spacing: 0.06em; color: var(--faint); }
+  .gprompt-text { margin-top: 3px; font-size: 12px; line-height: 1.55; color: var(--muted); }
+
+  footer.section { text-align: center; background: var(--hero-mid); color: var(--on-hero); }
+  footer p { font-size: 12px; color: var(--on-hero-dim); }
+  footer p + p { margin-top: 4px; font-size: 11px; }
+
+  /* --- Modal --- */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: var(--backdrop); display: flex; align-items: flex-end;
+    justify-content: center; z-index: 50; opacity: 0; pointer-events: none; transition: opacity .18s ease;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  @media (min-width: 500px) { .modal-backdrop { align-items: center; } }
+  .modal {
+    width: 100%; max-width: 430px; max-height: 88vh; overflow-y: auto; background: var(--surface);
+    border-radius: 20px 20px 0 0; padding: 24px 24px 28px; transform: translateY(16px); transition: transform .18s ease;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  @media (min-width: 500px) { .modal { border-radius: 18px; } }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; }
+  .modal-head h2 { font-size: 18px; }
+  .modal-close { width: 30px; height: 30px; border-radius: 999px; border: none; background: var(--surface-soft); color: var(--muted); display: flex; align-items: center; justify-content: center; }
+  .field { margin-top: 18px; }
+  .field label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
+  .field input, .field textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; font-size: 14px;
+    font-family: inherit; color: var(--ink); background: var(--surface-soft); resize: none;
+  }
+  .field textarea { min-height: 72px; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--faint); }
+  .consent-row { margin-top: 20px; display: flex; align-items: flex-start; gap: 10px; }
+  .consent-row input[type="checkbox"] { margin-top: 2px; width: 17px; height: 17px; accent-color: var(--blue); flex: 0 0 auto; }
+  .consent-row label { font-size: 12.5px; line-height: 1.6; color: var(--ink); }
+  .consent-row a { color: var(--blue); font-size: 12px; }
+  .form-error { margin-top: 12px; font-size: 12px; color: oklch(55% 0.18 25); display: none; }
+  .form-error.show { display: block; }
+  .modal-submit {
+    margin-top: 22px; width: 100%; padding: 14px; border: none; border-radius: 10px; background: var(--blue);
+    color: var(--blue-on); font-size: 14.5px; font-weight: 700;
+  }
+  .success-view { display: none; text-align: center; padding: 12px 4px 4px; }
+  .success-view.show { display: block; }
+  .success-icon {
+    margin: 0 auto; width: 52px; height: 52px; border-radius: 999px; background: var(--blue-tint);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .success-view h2 { margin-top: 16px; font-size: 17px; }
+  .success-view p { margin-top: 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .success-close { margin-top: 22px; width: 100%; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: none; color: var(--ink); font-size: 14px; font-weight: 600; }
+</style>
+
+<div class="frame">
+
+  <!-- 1. 슬로건 / 설명 / 도정비전 메뉴 (배경 사진 사용 영역 — HERO_IMAGE) -->
+  <section class="section hero">
+    <div class="hero-bg" id="heroBg" aria-hidden="true">
+      <div class="hero-scrim"></div>
+    </div>
+    <div class="hero-wave" aria-hidden="true">
+      <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C200,60 400,0 600,20 C800,40 1000,0 1200,20 L1200,60 L0,60 Z"/></svg>
+    </div>
+    <div class="hero-content">
+      <img class="hero-logo" id="heroLogo" src="logo.png" alt="통(通)하는 충남, 도민과 함께">
+      <p class="hero-desc">단절을 넘어 사람과 사람, 지역과 미래를 연결하는,<br>더 넓은 기회와 미래를 만들어 나가는 충청남도</p>
+      <a class="hero-cta" href="https://www.chungnam.go.kr/cnportal/singl/contents/ready.do?menuNo=5100107" target="_blank" rel="noopener" id="visionBtn">
+        도정비전 상세보기
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M7 17 17 7M9 7h8v8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- 2. 홍보 영상 (캐러셀) -->
+  <section class="section">
+    <h2 class="section-title">충청남도 도정비전 홍보영상</h2>
+    <p class="carousel-note">좌우로 넘기며 여러 영상을 볼 수 있어요</p>
+    <div class="carousel-wrap">
+      <div class="carousel" id="videoTrack"></div>
+      <div class="carousel-controls">
+        <button class="cbtn" id="prevVideoBtn" type="button" aria-label="이전 영상">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dots" id="videoDots"></div>
+        <button class="cbtn" id="nextVideoBtn" type="button" aria-label="다음 영상">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider wave-video-to-event" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C200,60 400,0 600,20 C800,40 1000,0 1200,20 L1200,60 L0,60 Z"/></svg>
+  </div>
+
+  <!-- 3. 이벤트 안내 -->
+  <section class="section event-bg">
+    <span class="section-eyebrow">EVENT</span>
+    <h2 class="section-title">충청남도 이미지<br>생성형 AI 챌린지</h2>
+    <p class="event-pitch">내가 상상하는 충남, 이미지 AI 챌린지에 참여하고,<br>모두와 함께 충남의 매력을 나눠보세요!</p>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="card-head">이벤트 기간</div>
+        <div class="card-body">26.11.2(월) ~<br>26.11.15(일)<br>15일간</div>
+      </div>
+      <div class="info-card">
+        <div class="card-head">결과 발표</div>
+        <div class="card-body">26.11.25(수)</div>
+      </div>
+    </div>
+
+    <div class="steps-card">
+      <div class="card-head">이벤트 참여 방법</div>
+      <div class="steps-grid">
+        <div class="step-col">
+          <span class="step-tag">STEP 1</span>
+          <div class="step-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke-linecap="round"/></svg>
+          </div>
+          <p class="step-title">키워드 선택 후<br>AI 이미지 생성</p>
+        </div>
+        <div class="step-col">
+          <span class="step-tag">STEP 2</span>
+          <div class="step-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><path d="M4 12l16-8-6 16-3-7-7-3z" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="step-title">이미지·프롬프트·정보 작성 후 제출</p>
+        </div>
+        <div class="step-col">
+          <span class="step-tag">STEP 3</span>
+          <div class="step-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="M7.8 10.8l8.4-3.6M7.8 13.2l8.4 3.6" stroke-linecap="round"/></svg>
+          </div>
+          <p class="step-title">SNS 공유하면<br>당첨 확률 UP!</p>
+        </div>
+      </div>
+      <div class="step-extra">
+        <p class="keyword-line">주제 키워드(1안) — <b>AI 산업혁신 · 사회안전망 · 지속가능성</b></p>
+      </div>
+      <div class="step-callout">
+        <p>게시물 업로드 시 인스타그램 계정 <b>@chungnam_official</b> 태그 및 해시태그(#통하는충남 #충청남도AI챌린지) 등록 필수</p>
+      </div>
+    </div>
+
+    <p class="prizes-title">경품 안내</p>
+    <div class="prizes" id="prizesGrid"></div>
+
+    <button class="apply-btn" type="button" id="openModalBtn">
+      신청하기
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </section>
+
+  <div class="wave-divider wave-event-to-gallery" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C200,60 400,0 600,20 C800,40 1000,0 1200,20 L1200,60 L0,60 Z"/></svg>
+  </div>
+
+  <!-- 4. 참가작품 공유 (캐러셀) -->
+  <section class="section">
+    <h2 class="section-title">참가작품 공유</h2>
+    <p class="carousel-note">좌우로 넘기며 참가작품을 확인할 수 있어요</p>
+    <div class="carousel-wrap">
+      <div class="carousel" id="carousel"></div>
+      <div class="carousel-controls">
+        <button class="cbtn" id="prevBtn" type="button" aria-label="이전 작품">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dots" id="dots"></div>
+        <button class="cbtn" id="nextBtn" type="button" aria-label="다음 작품">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="wave-divider wave-gallery-to-footer" aria-hidden="true">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C200,60 400,0 600,20 C800,40 1000,0 1200,20 L1200,60 L0,60 Z"/></svg>
+  </div>
+
+  <footer class="section">
+    <p>충청남도</p>
+    <p>문의 : [담당부서 연락처를 입력해주세요]</p>
+  </footer>
+
+</div>
+
+<!-- 신청 모달 -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+    <form id="applyForm">
+      <div class="modal-head">
+        <h2 id="modalTitle">이벤트 참여 신청</h2>
+        <button class="modal-close" type="button" id="closeModalBtn" aria-label="닫기">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="field">
+        <label for="fName">이름 (닉네임 가능)</label>
+        <input id="fName" type="text" placeholder="이름 또는 닉네임을 입력해주세요">
+      </div>
+      <div class="field">
+        <label for="fPhone">연락처</label>
+        <input id="fPhone" type="tel" placeholder="010-0000-0000">
+      </div>
+      <div class="field">
+        <label for="fPrompt">이미지 프롬프트</label>
+        <textarea id="fPrompt" placeholder="이미지 생성에 사용한 프롬프트를 입력해주세요"></textarea>
+      </div>
+
+      <div class="consent-row">
+        <input type="checkbox" id="fConsent">
+        <label for="fConsent">[필수] 개인정보 수집 및 이용에 동의합니다 <a href="#" id="consentDetail">자세히 보기</a></label>
+      </div>
+
+      <p class="form-error" id="formError">필수 항목을 모두 입력하고, 개인정보 수집·이용에 동의해주세요.</p>
+
+      <button class="modal-submit" type="submit">제출하기</button>
+    </form>
+
+    <div class="success-view" id="successView">
+      <div class="success-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.4"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>신청이 접수되었습니다</h2>
+      <p>제출해주신 프롬프트와 정보는 담당자 확인 후<br>당첨자 선정에 활용됩니다.</p>
+      <button class="success-close" type="button" id="successCloseBtn">닫기</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   ▼▼▼  아래 목록만 고쳐서 쓰시면 됩니다  ▼▼▼
+
+   이 페이지에서 "사진(이미지)"이 들어가는 곳은 아래 4곳뿐입니다.
+     1) HERO_IMAGE : 맨 위 히어로 배경 사진      — 비워두면 하늘색 그러데이션만 표시
+     2) VIDEOS     : 홍보영상 캐러셀 (썸네일은 유튜브 ID로 자동 생성됨)
+     3) PRIZES     : 경품 안내 사진(선택)         — 비워두면 색상 카드로 대체 표시
+     4) GALLERY    : 참가작품 캐러셀 사진         — 비워두면 색상 카드로 대체 표시
+   그 외 영역(이벤트 정보, 참여방법, 신청 폼, 푸터 등)은
+   사진 없이 색상·타이포그래피로만 디자인되어 있어 손댈 필요가 없습니다.
+
+   - { ... } 블록을 콤마(,)로 이어붙이면 슬라이드가 자동으로 늘어납니다.
+   - 항목을 지우면 슬라이드 수도 자동으로 줄어듭니다.
+   ========================================================================= */
+
+  var HERO_IMAGE = "hero.jpeg";   // 히어로 배경 사진 경로 또는 URL (예: hero.jpg). 비워두면 그러데이션만 표시됩니다.
+
+  var VIDEOS = [
+    {
+      title: "통하는 충청남도",
+      youtubeId: "https://www.youtube.com/watch?v=iMdN4_a9LMk",   // 유튜브 전체 주소를 붙여넣어도, ID만 적어도 됩니다.
+      description: "유병재와 나태주 시인이 말하는 통하는 충청남도"
+    },
+    {
+      title: "AI 수도, 충남",
+      youtubeId: "https://www.youtube.com/watch?v=MNlrNoegIbM",
+      description: "대한민국 AI 수도로 거듭나려는 충청남도"
+    }
+    // ,{ title: "세 번째 영상 제목", youtubeId: "영상 주소 또는 ID", description: "영상 설명" }
+  ];
+
+  var PRIZES = [
+    { image: "오즈모.png", rank: "1등", count: "1명", name: "오즈모 액션캠 45만원" },   // image를 비워두면 색상 카드로 표시됩니다.
+    { image: "네이버.png", rank: "2등", count: "10명", name: "네이버페이 3만원" },
+    { image: "투썸.png", rank: "3등", count: "30명", name: "투썸플레이스 쿠폰 1만원" }
+  ];
+
+  var GALLERY = [
+    {
+      image: "IMAGE3.jpg",        // 이미지 파일 경로 또는 URL (예: images/entry1.jpg). 비워두면 예시 색상 카드로 표시됩니다.
+      tag: "#AI 산업혁신",
+      name: "충남 최고",
+      prompt: "2026년 충남의 오늘날, 백제 계백 장군이 보령 머드 축제를 즐기는 모습을 만들어줘"
+    },
+    {
+      image: "images1.jpeg",
+      tag: "#사회안전망",
+      name: "",
+      prompt: ""
+    },
+    {
+      image: "images2.jpeg",
+      tag: "#지속가능성",
+      name: "",
+      prompt: ""
+    }
+    // ,{ image: "images/entry4.jpg", tag: "#지속가능성", name: "닉네임", prompt: "프롬프트 내용" }
+  ];
+
+/* ▲▲▲  여기까지가 직접 수정하는 영역입니다  ▲▲▲ ========================= */
+
+
+  // ---------- 공통: 좌우 캐러셀 동작 ----------
+  function setupCarousel(trackEl, prevBtn, nextBtn, dotsWrap, gapPx) {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function cards() { return Array.prototype.slice.call(trackEl.children); }
+    function cardStep() {
+      var list = cards();
+      if (!list.length) return 1;
+      return list[0].getBoundingClientRect().width + gapPx;
+    }
+    function currentIndex() { return Math.round(trackEl.scrollLeft / cardStep()); }
+    function renderDots() {
+      dotsWrap.innerHTML = '';
+      cards().forEach(function (_, i) {
+        var d = document.createElement('span');
+        d.className = 'dot' + (i === 0 ? ' active' : '');
+        dotsWrap.appendChild(d);
+      });
+    }
+    function updateUI() {
+      var list = cards();
+      var idx = Math.max(0, Math.min(list.length - 1, currentIndex()));
+      var dots = dotsWrap.querySelectorAll('.dot');
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = list.length === 0 || idx === list.length - 1;
+    }
+    function goTo(idx) {
+      var list = cards();
+      idx = Math.max(0, Math.min(list.length - 1, idx));
+      trackEl.scrollTo({ left: idx * cardStep(), behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+    prevBtn.addEventListener('click', function () { goTo(currentIndex() - 1); });
+    nextBtn.addEventListener('click', function () { goTo(currentIndex() + 1); });
+    trackEl.addEventListener('scroll', function () { window.requestAnimationFrame(updateUI); });
+    window.addEventListener('resize', updateUI);
+    renderDots();
+    updateUI();
+  }
+
+  function playIconSvg() {
+    return '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 5.5v13l11-6.5-11-6.5z" fill="var(--blue-strong)"/></svg>';
+  }
+  function ytIconSvg() {
+    return '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.6-.5-5.3c-.3-1-.9-1.7-2-2C18.6 4 12 4 12 4s-6.6 0-8.5.7c-1 .3-1.8 1-2 2C1 8.4 1 12 1 12s0 3.6.5 5.3c.3 1 1 1.7 2 2C5.4 20 12 20 12 20s6.6 0 8.5-.7c1-.3 1.7-1 2-2 .5-1.7.5-5.3.5-5.3z"/><path d="M9.8 15.5V8.5l6.4 3.5-6.4 3.5z" fill="white"/></svg>';
+  }
+  function imgIconSvg() {
+    return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M21 15l-5-5-9 9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  // 유튜브 전체 주소를 붙여넣어도, 순수 ID만 입력해도 모두 인식되도록 ID를 뽑아냅니다.
+  function extractYoutubeId(input) {
+    var s = (input || '').trim();
+    if (!s) return '';
+    var m = s.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
+    if (m) return m[1];
+    if (/^[A-Za-z0-9_-]{6,}$/.test(s)) return s; // 이미 순수 ID인 경우
+    return s; // 알 수 없는 형식 — 아래에서 썸네일 실패 시 안내 문구로 대체됩니다
+  }
+
+  // ---------- 홍보영상 캐러셀 렌더링 ----------
+  function renderVideos() {
+    var track = document.getElementById('videoTrack');
+    track.innerHTML = '';
+
+    VIDEOS.forEach(function (v) {
+      var id = extractYoutubeId(v.youtubeId);
+
+      var card = document.createElement('article');
+      card.className = 'vcard';
+
+      var callout = document.createElement('span');
+      callout.className = 'vcallout';
+      callout.textContent = v.title || '[영상 제목을 입력해주세요]';
+      card.appendChild(callout);
+
+      var frame = document.createElement('div');
+      frame.className = 'vframe';
+
+      function showVideoHint(msg) {
+        frame.innerHTML = '';
+        frame.classList.add('vframe-empty');
+        var hint = document.createElement('span');
+        hint.className = 'vframe-hint';
+        hint.textContent = msg;
+        frame.appendChild(hint);
+      }
+
+      if (id) {
+        var thumb = document.createElement('img');
+        thumb.className = 'vthumb';
+        thumb.loading = 'lazy';
+        thumb.alt = '';
+        thumb.src = 'https://img.youtube.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg';
+        thumb.addEventListener('error', function () {
+          showVideoHint('영상을 불러올 수 없습니다 (영상 ID를 다시 확인해주세요)');
+        });
+        frame.appendChild(thumb);
+
+        var scrim = document.createElement('div');
+        scrim.className = 'vscrim';
+        frame.appendChild(scrim);
+
+        var play = document.createElement('button');
+        play.type = 'button';
+        play.className = 'play-btn vplay';
+        play.setAttribute('aria-label', '영상 재생');
+        play.innerHTML = playIconSvg();
+        frame.appendChild(play);
+
+        var badge = document.createElement('a');
+        badge.className = 'yt-badge';
+        badge.href = 'https://www.youtube.com/watch?v=' + encodeURIComponent(id);
+        badge.target = '_blank';
+        badge.rel = 'noopener';
+        badge.innerHTML = ytIconSvg() + '<span>유튜브에서 보기</span>';
+        badge.addEventListener('click', function (e) { e.stopPropagation(); });
+        frame.appendChild(badge);
+
+        frame.addEventListener('click', function () {
+          frame.innerHTML = '';
+          var iframe = document.createElement('iframe');
+          iframe.src = 'https://www.youtube.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
+          iframe.title = v.title || 'YouTube video';
+          iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+          iframe.setAttribute('allowfullscreen', '');
+          frame.appendChild(iframe);
+        });
+      } else {
+        frame.classList.add('vframe-empty');
+        var hint = document.createElement('span');
+        hint.className = 'vframe-hint';
+        hint.textContent = '유튜브 영상 ID를 입력해주세요';
+        frame.appendChild(hint);
+      }
+
+      card.appendChild(frame);
+
+      var desc = document.createElement('p');
+      desc.className = 'vdesc';
+      desc.textContent = v.description || '[영상 설명을 입력해주세요]';
+      card.appendChild(desc);
+
+      track.appendChild(card);
+    });
+  }
+
+  // ---------- 참가작품 캐러셀 렌더링 ----------
+  function renderGallery() {
+    var track = document.getElementById('carousel');
+    track.innerHTML = '';
+    var tints = ['tint-a', 'tint-b', 'tint-c'];
+
+    GALLERY.forEach(function (g, i) {
+      var card = document.createElement('article');
+      card.className = 'gcard';
+
+      var imgWrap = document.createElement('div');
+      imgWrap.className = 'gimg';
+
+      function showPlaceholder() {
+        imgWrap.innerHTML = '';
+        imgWrap.className = 'gimg ' + tints[i % tints.length];
+        imgWrap.innerHTML = imgIconSvg();
+      }
+
+      if (g.image) {
+        var img = document.createElement('img');
+        img.src = g.image;
+        img.alt = g.name || '';
+        img.loading = 'lazy';
+        img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;';
+        img.addEventListener('error', showPlaceholder);
+        imgWrap.appendChild(img);
+      } else {
+        showPlaceholder();
+      }
+      card.appendChild(imgWrap);
+
+      var body = document.createElement('div');
+      body.className = 'gbody';
+
+      var tag = document.createElement('span');
+      tag.className = 'gtag';
+      tag.textContent = g.tag || '';
+      body.appendChild(tag);
+
+      var name = document.createElement('p');
+      name.className = 'gname';
+      name.textContent = g.name || '[닉네임]';
+      body.appendChild(name);
+
+      var label = document.createElement('p');
+      label.className = 'gprompt-label';
+      label.textContent = 'PROMPT';
+      body.appendChild(label);
+
+      var prompt = document.createElement('p');
+      prompt.className = 'gprompt-text';
+      prompt.textContent = g.prompt || '[제출된 프롬프트가 여기에 표시됩니다]';
+      body.appendChild(prompt);
+
+      card.appendChild(body);
+      track.appendChild(card);
+    });
+  }
+
+  // ---------- 경품 안내 사진 ----------
+  function renderPrizes() {
+    var grid = document.getElementById('prizesGrid');
+    grid.innerHTML = '';
+    var tints = ['tint-a', 'tint-b', 'tint-c'];
+
+    PRIZES.forEach(function (p, i) {
+      var item = document.createElement('div');
+      item.className = 'prize-item' + (i === 0 ? ' gold' : '');
+
+      var photo = document.createElement('div');
+      photo.className = 'prize-photo';
+
+      function showPlaceholder() {
+        photo.innerHTML = '';
+        photo.className = 'prize-photo ' + tints[i % tints.length];
+        photo.innerHTML = imgIconSvg();
+      }
+
+      if (p.image) {
+        var img = document.createElement('img');
+        img.src = p.image;
+        img.alt = p.name || '';
+        img.loading = 'lazy';
+        img.addEventListener('error', showPlaceholder);
+        photo.appendChild(img);
+      } else {
+        showPlaceholder();
+      }
+
+      var badge = document.createElement('span');
+      badge.className = 'prize-badge';
+      badge.textContent = (p.rank || '') + ' · ' + (p.count || '');
+      photo.appendChild(badge);
+
+      item.appendChild(photo);
+
+      var name = document.createElement('p');
+      name.className = 'prize-name';
+      name.textContent = p.name || '[경품명]';
+      item.appendChild(name);
+
+      grid.appendChild(item);
+    });
+  }
+
+  // ---------- 히어로 배경 사진 ----------
+  function renderHero() {
+    var logo = document.getElementById('heroLogo');
+    // 로고 파일을 못 찾으면 조용히 숨김 — 이미 로딩이 끝나버린 경우까지 함께 처리
+    if (logo.complete) {
+      if (logo.naturalWidth === 0) logo.style.display = 'none';
+    } else {
+      logo.addEventListener('error', function () { logo.style.display = 'none'; });
+    }
+
+    if (!HERO_IMAGE) return; // 비워두면 그러데이션 배경만 표시
+    var heroBg = document.getElementById('heroBg');
+    var img = document.createElement('img');
+    img.src = HERO_IMAGE;
+    img.alt = '';
+    img.loading = 'lazy';
+    img.addEventListener('error', function () { img.remove(); }); // 실패하면 그러데이션으로 자연스럽게 대체
+    heroBg.insertBefore(img, heroBg.firstChild);
+  }
+
+  renderHero();
+  renderVideos();
+  renderPrizes();
+  renderGallery();
+
+  setupCarousel(
+    document.getElementById('videoTrack'),
+    document.getElementById('prevVideoBtn'),
+    document.getElementById('nextVideoBtn'),
+    document.getElementById('videoDots'),
+    12
+  );
+  setupCarousel(
+    document.getElementById('carousel'),
+    document.getElementById('prevBtn'),
+    document.getElementById('nextBtn'),
+    document.getElementById('dots'),
+    12
+  );
+
+  // ---------- 신청 모달 ----------
+  var backdrop = document.getElementById('modalBackdrop');
+  var openBtn = document.getElementById('openModalBtn');
+  var closeBtn = document.getElementById('closeModalBtn');
+  var successCloseBtn = document.getElementById('successCloseBtn');
+  var form = document.getElementById('applyForm');
+  var successView = document.getElementById('successView');
+  var formError = document.getElementById('formError');
+  var lastFocused = null;
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    backdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(function () { document.getElementById('fName').focus(); }, 50);
+  }
+  function closeModal() {
+    backdrop.classList.remove('open');
+    document.body.style.overflow = '';
+    form.style.display = '';
+    form.reset();
+    successView.classList.remove('show');
+    formError.classList.remove('show');
+    if (lastFocused) lastFocused.focus();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  successCloseBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', function (e) { if (e.target === backdrop) closeModal(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && backdrop.classList.contains('open')) closeModal();
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('fName').value.trim();
+    var phone = document.getElementById('fPhone').value.trim();
+    var prompt = document.getElementById('fPrompt').value.trim();
+    var consent = document.getElementById('fConsent').checked;
+
+    if (!name || !phone || !prompt || !consent) {
+      formError.classList.add('show');
+      return;
+    }
+    formError.classList.remove('show');
+    form.style.display = 'none';
+    successView.classList.add('show');
+  });
+
+  document.getElementById('consentDetail').addEventListener('click', function (e) { e.preventDefault(); });
+</script>
